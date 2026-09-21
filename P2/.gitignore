@@ -1,0 +1,6 @@
+.idea/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+GLAD/
+.pdf
