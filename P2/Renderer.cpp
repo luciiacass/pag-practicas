@@ -1,13 +1,13 @@
 //
 // Created by luuca on 21/09/2026.
 //
-
+#include "glad/glad.h"
 #include "Renderer.h"
 
 #include <iostream>
 #include <string>
 
-#include "glad/glad.h"
+
 
 namespace PAG {
 
@@ -40,9 +40,6 @@ namespace PAG {
     }
 
     void Renderer::scroll (double xoffset, double yoffset ){
-        std::cout << "Movida la rueda del ratón " << xoffset
-                << " Unidades en horizontal y " << yoffset
-                << " unidades en vertical" << std::endl;
 
         // - Establecemos nuevos valores que no pasen el limite de [0,1]
         for (int i = 0; i<3; i++) {
@@ -72,6 +69,18 @@ namespace PAG {
 
     void Renderer::depth() {
         glEnable ( GL_DEPTH_TEST );
+    }
+
+
+    const float* Renderer::getScreenColor () {
+        return screenColor;
+    }
+
+    void Renderer::setScreenColor ( const float* color ) {
+        for ( int i = 0; i < 3; i++ ) {
+            screenColor[i] = color_limit ( color[i] );
+        }
+        glClearColor ( screenColor[0], screenColor[1], screenColor[2], screenColor[3] );
     }
 
 

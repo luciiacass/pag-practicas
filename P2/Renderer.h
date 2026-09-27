@@ -29,6 +29,9 @@ namespace PAG {
         void info();
         void depth();
 
+        const float* getScreenColor ();
+        void setScreenColor ( const float* screenColor );
+
 
     };
 } // PAG
