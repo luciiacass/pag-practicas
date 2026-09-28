@@ -83,10 +83,4 @@ namespace PAG {
         glClearColor ( screenColor[0], screenColor[1], screenColor[2], screenColor[3] );
     }
 
-
-
-
-
-
-
 } // PAG
