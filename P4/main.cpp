@@ -18,6 +18,23 @@ void render ( GLFWwindow* window ) {
         PAG::Renderer::getInstancia().setScreenColor ( PAG::GUI::getInstancia().getBgColor() );
     }
 
+    if (PAG::GUI::getInstancia().hasLoadShaderPressed()) {
+
+        try {
+            PAG::Renderer::getInstancia().loadShaderProgram(
+                PAG::GUI::getInstancia().getShaderName()
+            );
+
+            PAG::GUI::getInstancia().addMessage(
+                "Shader program cargado: " +
+                PAG::GUI::getInstancia().getShaderName()
+            );
+        }
+        catch (const std::exception& e) {
+            PAG::GUI::getInstancia().addMessage(e.what());
+        }
+    }
+
     PAG::Renderer::getInstancia().refresh();  // Dibuja la escena (OpenGL)
     PAG::GUI::getInstancia().render();        // La interfaz va encima
 
@@ -122,6 +139,12 @@ int main()
         return -3;
     }
 
+    // - Registramos los callbacks que responderán a los eventos principales
+    glfwSetWindowRefreshCallback ( window, window_refresh_callback );
+    glfwSetFramebufferSizeCallback ( window, framebuffer_size_callback );
+    glfwSetKeyCallback ( window, key_callback );
+    glfwSetMouseButtonCallback ( window, mouse_button_callback );
+
     PAG::GUI::getInstancia().init ( window );
     // - Interrogamos a OpenGL para que nos informe de las propiedades del contexto
     // 3D construido.
@@ -129,12 +152,7 @@ int main()
 
     PAG::GUI::getInstancia().setBgColor ( PAG::Renderer::getInstancia().getScreenColor() );
 
-
-    // - Registramos los callbacks que responderán a los eventos principales
-    glfwSetWindowRefreshCallback ( window, window_refresh_callback );
-    glfwSetFramebufferSizeCallback ( window, framebuffer_size_callback );
-    glfwSetKeyCallback ( window, key_callback );
-    glfwSetMouseButtonCallback ( window, mouse_button_callback );
+    
     //glfwSetScrollCallback ( window, scroll_callback ); ASI SOLO SE CAMBIA EL COLOR CON LA VENTANA
 
 
@@ -142,8 +160,7 @@ int main()
     // dibujar.
     PAG::Renderer::getInstancia().depth();
     try {
-        PAG::Renderer::getInstancia().creaShaderProgram("shaders/pag03");
-
+        PAG::Renderer::getInstancia().loadShaderProgram("shaders/pag03");
         //EJEMPLO FALLO:
         //PAG::Renderer::getInstancia().creaShaderProgram("shaders/pag0");
     } catch ( const std::exception& e ) {
