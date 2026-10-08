@@ -39,3 +39,19 @@ Se aplica la formula en los 3 vértices por lo que estos se 'mueven' con la pant
 
 Esto sucede en nuestro codigo ya que no aplicamos ninguna transformación para evitarlo.
 Habría que aplicar una transformación de proyección, aplicando una matriz de proyección que incluta la relacion de aspecto (w/h)
+
+
+# pag-p4
+**CAMBIOS REALIZADOS:**
+1. Desacoplamiento de shader programs. En la práctica anterior se realizaba en PAG::Renderer, ahora se encarga PAG::Shader
+   - Se ha movido el método create de Renderer a Shader, con el cambio de que ahora se usan identificadores temporales.
+   De esa forma el shader anterior solo se elimina cuando el sustituto ha compilado, evitando que la aplicación use un shader erróneo.
+   - Sin embargo se ha definido un objeto shader en Renderer, para poder usarlo durante el renderizado, pero sin crearlo ni nada.
+2. Nueva caja en la interfaz para añadir los shaders desde pantalla con un botón 'load'
+   - Si se produce un error, se muestra en pantalla
+3. El triángulo no se muestra de primeras, si no que aparece en pantalla al cargar un shader válido
+
+Responsabilidad de cada clase (antes->ahora):
+- Renderer: dibujaba la escena, gestionando los shader -> dibuja la escena y usa un objeto shader
+- GUI: interfaz de usuario (pantalla de mensajes, color y triangulo) -> interfaz de usuario (pantalla de mensajes, color y carga de shader)
+- Shader: no existía -> gestiona los shaders

@@ -152,20 +152,21 @@ int main()
 
     PAG::GUI::getInstancia().setBgColor ( PAG::Renderer::getInstancia().getScreenColor() );
 
-    
+
     //glfwSetScrollCallback ( window, scroll_callback ); ASI SOLO SE CAMBIA EL COLOR CON LA VENTANA
 
 
     // - Le decimos a OpenGL que tenga en cuenta la profundidad a la hora de
     // dibujar.
     PAG::Renderer::getInstancia().depth();
-    try {
-        PAG::Renderer::getInstancia().loadShaderProgram("shaders/pag03");
-        //EJEMPLO FALLO:
-        //PAG::Renderer::getInstancia().creaShaderProgram("shaders/pag0");
-    } catch ( const std::exception& e ) {
-        PAG::GUI::getInstancia().addMessage ( e.what() );
-    }
+    // El triangulo no se carga de primeras, si no al cargar el shader
+    //try {
+    //    PAG::Renderer::getInstancia().loadShaderProgram("shaders/pag03");
+    //    //EJEMPLO FALLO:
+    //    //PAG::Renderer::getInstancia().creaShaderProgram("shaders/pag0");
+    //} catch ( const std::exception& e ) {
+    //    PAG::GUI::getInstancia().addMessage ( e.what() );
+    //}
     PAG::Renderer::getInstancia().creaModelo();
 
     // - Ciclo de eventos de la aplicación. La condición de parada es que la
