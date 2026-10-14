@@ -40,6 +40,14 @@ namespace PAG {
 
         void setViewport(int width, int height);
 
+        //tipo de movimientos
+        void pan(float angle);
+        void tilt(float angle);
+        void dolly(float dx, float dz);
+        void crane(float dy);
+        void orbit(float latitude, float longitude);
+        void zoom(float angle);
+
     };
 } // PAG
 

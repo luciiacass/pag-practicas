@@ -51,15 +51,30 @@ namespace PAG {
     void Renderer::refresh (){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
+
+        //shader
         glUseProgram ( shader.getId() );
+
+        //matrices de la camara
+        glm::mat4 V = camera.getViewMatrix();
+        glm::mat4 P = camera.getProjectionMatrix();
+        glm::mat4 MVP = P * V;
+
+        //envia la matriz al shader
+        GLint location = glGetUniformLocation ( shader.getId(), "MVP" );
+        glUniformMatrix4fv ( location, 1, GL_FALSE, &MVP[0][0] );
+
+        //triangulo
         glBindVertexArray ( idVAO );
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, idIBO );
         glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr );
 
     }
 
+    //Actualiza tanto el viewport de OpenGL como las dimensiones de la camara
     void Renderer::reframe(int width, int height ) {
         glViewport ( 0, 0, width, height );
+        camera.setViewport(width, height);
     }
 
     void Renderer::scroll (double xoffset, double yoffset ){
@@ -176,6 +191,31 @@ namespace PAG {
         glClearColor ( screenColor[0], screenColor[1], screenColor[2], screenColor[3] );
         glEnable ( GL_DEPTH_TEST );
         glEnable ( GL_MULTISAMPLE );
+    }
+
+
+    void Renderer::panCam(float angle) {
+        camera.pan(angle);
+    }
+
+    void Renderer::tiltCam(float angle) {
+        camera.tilt(angle);
+    }
+
+    void Renderer::dollyCam(float dx, float dz) {
+        camera.dolly(dx, dz);
+    }
+
+    void Renderer::craneCam(float dy) {
+        camera.crane(dy);
+    }
+
+    void Renderer::orbitCam(float latitude, float longitude) {
+        camera.orbit(latitude, longitude);
+    }
+
+    void Renderer::zoomCam(float angle) {
+        camera.zoom(angle);
     }
 
 

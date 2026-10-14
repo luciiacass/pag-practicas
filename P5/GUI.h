@@ -19,12 +19,23 @@ namespace PAG {
         float bgColor[3] = { 0.6f, 0.6f, 0.6f };  ///< Color elegido en el control
         bool colorChanged = false;                ///< true si el usuario lo ha cambiado
 
+        //atributos shader
         std::string shaderName = "shaders/pag03";
         bool loadShaderPressed = false;
+
+        //atributos camara
+        int camMov = 0;
+        float camAngle = 5.0;
+        float camDist = 0.1;
+        float latitude = 5.0;
+        float longitude = 5.0;
 
         void messagesWindow ();
         void backgroundWindow ();
         void shaderWindow();
+        void cameraWindow();
+
+
 
     public:
         virtual ~GUI ();

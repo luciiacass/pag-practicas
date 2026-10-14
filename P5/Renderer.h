@@ -6,6 +6,8 @@
 #define P2_RENDERER_H
 
 #include "Shader.h"
+#include "Camera.h"
+
 
 #include <string>
 #include <GLFW/glfw3.h>
@@ -27,6 +29,7 @@ namespace PAG {
         GLuint idVBOColores = 0;
 
         Shader shader;
+        Camera camera;
 
     public:
         virtual ~Renderer ();
@@ -48,6 +51,14 @@ namespace PAG {
 
         void creaModelo();
         void inicializaOpenGL();
+
+        void panCam(float angle);
+        void tiltCam(float angle);
+        void dollyCam(float dx, float dz);
+        void craneCam(float dy);
+        void orbitCam(float latitude, float longitude);
+        void zoomCam(float angle);
+
 
 
     };
