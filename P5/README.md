@@ -55,3 +55,130 @@ Responsabilidad de cada clase (antes->ahora):
 - Renderer: dibujaba la escena, gestionando los shader -> dibuja la escena y usa un objeto shader
 - GUI: interfaz de usuario (pantalla de mensajes, color y triangulo) -> interfaz de usuario (pantalla de mensajes, color y carga de shader)
 - Shader: no existía -> gestiona los shaders
+
+# pag-p5
+**SOPORTE PARA LA CÁMARA**
+1. Nueva clase con los siguientes atributos:
+- pos: posicion de la camara
+- la: punto al que mira la camara
+- u,v,n: ejes del sistema de coordenadas
+- zNear y zFar: planos de recorte
+- width, height: dimensiones del viewport
+
+Además de un metodo para calcular los ejes locales de la camara, a partir de su posicion y el punto al que mira
+
+2. Se obtienen las matrices de vision y proyección, que son pasadas al render para calcular MVP = P * V.
+Con esta matriz:
+- El vertex shader transforma las posiciones de los vértices
+- El renderer redimensiona la ventana de la camara para mantener la relacion de aspecto
+
+3. Movimientos de camara: Pan, Tilt, Dolly, Crane, Orbit, Zoom
+
+4. Cambios en render:
+- Objeto Camera
+- Modificacion del metodo refresh para calcular MVP y enviarla al shader
+- Metodo moveCam para poder usar los movimientos del raton para cambios de la camara
+- Metodos para obtener todos los movimientos de la camara
+
+5. Cambios en GUI:
+- Nueva ventana para los movimientos de la camara
+- Contiene un desplegable y distintos botones en funcion del movimiento que se seleccione
+
+6. Callback para mover la camara con el ratón:
+Se utilizan los valores obtenidos de la ventana de la camara para establecer la magnitud de movimiento.
+El valor que se obtiene se divide en 100 pixeles para convertir el movimiento del raton en distancias.
+Cuando se clicka el raton dentro de una de las otras ventanas, no se mueve la camara
+
+
+
+**INSTRUCCIONES**
+1. Introducir shader/pag03 en la ventana 'Shader Program' y pulsar Load.
+2. Se muestra un triángulo en pantalla
+3. Seleccionar un movimiento en el desplegable de la ventana 'Camara virtual'
+4. Seleccionar un angulo o distancia
+5. Mover la camara con los botones de la venta o con el botón izquierdo del ratón y desplazando
+6. Usar la rueda del ratón o la ventana 'Color de fondo' para cambiar el color del fondo.
+
+
+
+**DIAGRAMA DE CLASES UML**
+
+## Diagrama de clases UML
+
+```mermaid
+classDiagram
+    direction TB
+
+    class GUI {
+        -int camMov
+        -float camAngle
+        -float camDist
+        -float latitude
+        -float longitude
+        -cameraWindow()
+        +getInstancia()
+        +getCamMov()
+        +getCameraAngle()
+        +getCameraDistance()
+        +getOrbitLatitude()
+        +getOrbitLongitude()
+        +movementMouse()
+    }
+
+    class Camera {
+        -vec3 pos
+        -vec3 la
+        -vec3 u
+        -vec3 v
+        -vec3 n
+        -float fovX
+        -float zNear
+        -float zFar
+        -int width
+        -int height
+        -userfriendlyAxes()
+        +getViewMatrix()
+        +getProjectionMatrix()
+        +setViewport(width, height)
+        +pan(angle)
+        +tilt(angle)
+        +dolly(dx, dz)
+        +crane(dy)
+        +orbit(latitude, longitude)
+        +zoom(angle)
+    }
+
+    class Renderer {
+        -Shader shader
+        -Camera camera
+        -GLuint idVAO
+        -GLuint idVBO
+        -GLuint idIBO
+        +getInstancia()
+        +refresh()
+        +reframe(width, height)
+        +loadShaderProgram(name)
+        +creaModelo()
+        +panCam(angle)
+        +tiltCam(angle)
+        +dollyCam(dx, dz)
+        +craneCam(dy)
+        +orbitCam(latitude, longitude)
+        +zoomCam(angle)
+        +moveCam(mov, dx, dy)
+    }
+
+    class Shader {
+        -GLuint idVS
+        -GLuint idFS
+        -GLuint idSP
+        -readFile(filename)
+        +create(name)
+        +getId()
+    }
+
+    Renderer *-- Camera : contiene
+    Renderer *-- Shader : contiene
+    GUI ..> Renderer : solicita movimientos
+    Renderer ..> GUI : consulta controles
+```
