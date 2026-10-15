@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "GUI.h"
 
 
 namespace PAG {
@@ -216,6 +217,43 @@ namespace PAG {
 
     void Renderer::zoomCam(float angle) {
         camera.zoom(angle);
+    }
+
+    void Renderer::moveCam(int mov, float dx, float dy) {
+        const float pixels = 100.0f;
+
+        float horizontal = dx / pixels;
+        float vertical = dy / pixels;
+
+        switch (mov) {
+
+            case 0: // PAN
+                panCam(horizontal * GUI::getInstancia().getCameraAngle());
+                break;
+
+            case 1: // TILT
+                tiltCam(-vertical * GUI::getInstancia().getCameraAngle());
+                break;
+
+            case 2: // DOLLY
+                dollyCam(horizontal * GUI::getInstancia().getCameraDistance(), vertical * GUI::getInstancia().getCameraDistance());
+                break;
+
+            case 3: // CRANE
+                craneCam(-vertical * GUI::getInstancia().getCameraDistance());
+                break;
+
+            case 4: // ORBIT
+                orbitCam(vertical * GUI::getInstancia().getOrbitLatitude(), horizontal * GUI::getInstancia().getOrbitLongitude());
+                break;
+
+            case 5: // ZOOM
+                zoomCam(vertical * GUI::getInstancia().getCameraAngle());
+                break;
+
+            default:
+                break;
+        }
     }
 
 

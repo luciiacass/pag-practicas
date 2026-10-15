@@ -64,7 +64,7 @@ namespace PAG {
     void GUI::messagesWindow () {
 
         ImGui::SetNextWindowPos ( ImVec2 ( 10, 10 ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize ( ImVec2 ( 400, 250 ), ImGuiCond_Once );
+        ImGui::SetNextWindowSize ( ImVec2 ( 300, 150 ), ImGuiCond_Once );
 
 
         if ( ImGui::Begin ( "Mensajes" ) ) {
@@ -83,7 +83,9 @@ namespace PAG {
 
     // - Ventana con el selector del color de fondo
     void GUI::backgroundWindow () {
-        ImGui::SetNextWindowPos ( ImVec2 ( 430, 10 ), ImGuiCond_Once );
+        ImGui::SetNextWindowPos(ImVec2(720, 10), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(294, 300), ImGuiCond_Always);
+
         if ( ImGui::Begin ( "Color de fondo", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) ) {
             ImGui::SetWindowFontScale ( 1.0f );
 
@@ -126,10 +128,8 @@ namespace PAG {
 
     void GUI::shaderWindow() {
 
-        ImGui::SetNextWindowPos(
-            ImVec2(430, 300),
-            ImGuiCond_Once
-        );
+        ImGui::SetNextWindowPos(ImVec2(10, 170), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(300, 110), ImGuiCond_Always);
 
         if (ImGui::Begin(
                 "Shader Program",
@@ -168,15 +168,8 @@ namespace PAG {
     void GUI::cameraWindow() {
 
         //pos de la ventana
-        ImGui::SetNextWindowPos(
-            ImVec2(10, 280),
-            ImGuiCond_Once
-        );
-
-        ImGui::SetNextWindowSize(
-            ImVec2(300, 220),
-            ImGuiCond_Once
-        );
+        ImGui::SetNextWindowPos(ImVec2(10, 390), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(310, 175), ImGuiCond_Always);
 
         if (ImGui::Begin("Camara virtual")) {
 
@@ -318,6 +311,31 @@ namespace PAG {
 
         ImGui::End();
     }
+
+    float GUI::getCameraAngle()  {
+        return camAngle;
+    }
+
+    float GUI::getCameraDistance()  {
+        return camDist;
+    }
+
+    float GUI::getOrbitLatitude()  {
+        return latitude;
+    }
+
+    float GUI::getOrbitLongitude()  {
+        return longitude;
+    }
+
+    int GUI::getCamMov() {
+        return camMov;
+    }
+
+    bool GUI::movementMouse() {
+        return ImGui::GetIO().WantCaptureMouse;
+    }
+
 
 
 

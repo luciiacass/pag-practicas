@@ -58,6 +58,16 @@ namespace PAG {
         bool hasLoadShaderPressed();
         const std::string& getShaderName() const;
 
+        //valores elegidos en la ventana por el usuario
+        float getCameraAngle();
+        float getCameraDistance();
+        float getOrbitLatitude();
+        float getOrbitLongitude();
+        int getCamMov();
+        bool movementMouse();
+
+
+
     };
 }
 

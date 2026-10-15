@@ -59,6 +59,8 @@ namespace PAG {
         void orbitCam(float latitude, float longitude);
         void zoomCam(float angle);
 
+        void moveCam(int mov, float dx, float dy);
+
 
 
     };

@@ -10,6 +10,11 @@
 #include "Renderer.h"
 #include "GUI.h"
 
+//control raton
+bool mousePressed = false;
+double lastX = 0.0;
+double lastY = 0.0;
+
 void render ( GLFWwindow* window ) {
     PAG::GUI::getInstancia().newFrame();   // Empieza el frame de interfaz
     PAG::GUI::getInstancia().draw();       // Pinta las ventanas y sus controles
@@ -77,6 +82,39 @@ void mouse_button_callback ( GLFWwindow *window, int button, int action, int mod
         PAG::GUI::getInstancia().addMessage ( "Soltado el botón: " + std::to_string ( button ) );
         PAG::GUI::getInstancia().mouseButtonEvent ( button, false );
     }
+
+    //comprobamos que el boton pulsado es el izquierdo
+    if (button != GLFW_MOUSE_BUTTON_LEFT) {
+        return;
+    }
+
+    if (action == GLFW_PRESS) {
+        // Evitamos mover la camara al pulsar sobre ImGui
+        if (!PAG::GUI::getInstancia().movementMouse()) {
+            mousePressed = true;
+            glfwGetCursorPos(window,&lastX,&lastY);
+        }
+    }
+    else if (action == GLFW_RELEASE) {
+        mousePressed = false;
+    }
+}
+
+void cursor_position_callback ( GLFWwindow *window, double xpos, double ypos ) {
+    if (!mousePressed) {
+        return;
+    }
+
+    //desplazamiento
+    double dx = xpos - lastX;
+    double dy = ypos - lastY;
+    //actualizacion de pos
+    lastX = xpos;
+    lastY = ypos;
+
+    int movement = PAG::GUI::getInstancia().getCamMov();
+    PAG::Renderer::getInstancia().moveCam(movement,dx,dy);
+
 }
 
 // - Esta función callback será llamada cada vez que se mueva la rueda del ratón sobre el área de dibujo OpenGL.
@@ -87,8 +125,6 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset ){
 
     PAG::Renderer::getInstancia().scroll(xoffset, yoffset);
     PAG::GUI::getInstancia().setBgColor ( PAG::Renderer::getInstancia().getScreenColor() );
-
-    glfwSwapBuffers ( window );
 
 }
 
@@ -145,6 +181,8 @@ int main()
     glfwSetFramebufferSizeCallback ( window, framebuffer_size_callback );
     glfwSetKeyCallback ( window, key_callback );
     glfwSetMouseButtonCallback ( window, mouse_button_callback );
+    glfwSetScrollCallback ( window, scroll_callback );
+    glfwSetCursorPosCallback(window, cursor_position_callback);
 
     PAG::GUI::getInstancia().init ( window );
     // - Interrogamos a OpenGL para que nos informe de las propiedades del contexto
@@ -154,7 +192,7 @@ int main()
     PAG::GUI::getInstancia().setBgColor ( PAG::Renderer::getInstancia().getScreenColor() );
 
 
-    //glfwSetScrollCallback ( window, scroll_callback ); ASI SOLO SE CAMBIA EL COLOR CON LA VENTANA
+
 
 
     // - Le decimos a OpenGL que tenga en cuenta la profundidad a la hora de
