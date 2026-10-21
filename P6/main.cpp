@@ -208,7 +208,7 @@ int main()
     //} catch ( const std::exception& e ) {
     //    PAG::GUI::getInstancia().addMessage ( e.what() );
     //}
-    PAG::Renderer::getInstancia().creaModelo();
+    PAG::Renderer::getInstancia().inicializaModelo();
 
     // - Ciclo de eventos de la aplicación. La condición de parada es que la
     // ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el

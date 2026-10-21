@@ -20,7 +20,9 @@ add_executable( ${PROJECT_NAME} ${MY_FILES}
         SHADER.cpp
         SHADER.h
         Camera.cpp
-        Camera.h)
+        Camera.h
+        Modelo.cpp
+        Modelo.h)
 
 # Indica directorios (adicionales a los por defecto) para buscar includes
 target_include_directories( ${PROJECT_NAME} PUBLIC GLAD/include

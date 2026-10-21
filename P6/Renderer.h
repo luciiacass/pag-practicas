@@ -7,6 +7,7 @@
 
 #include "Shader.h"
 #include "Camera.h"
+#include "Modelo.h"
 
 
 #include <string>
@@ -23,13 +24,10 @@ namespace PAG {
 
         float color_limit ( float value );
 
-        GLuint idVAO = 0; // Identificador del vertex array object
-        GLuint idVBO = 0; // Identificador del vertex buffer object
-        GLuint idIBO = 0; // Identificador del index buffer object
-        GLuint idVBOColores = 0;
 
         Shader shader;
         Camera camera;
+        Modelo modelo;
 
     public:
         virtual ~Renderer ();
@@ -49,7 +47,6 @@ namespace PAG {
 
         void loadShaderProgram(const std::string& name);
 
-        void creaModelo();
         void inicializaOpenGL();
 
         void panCam(float angle);
@@ -60,6 +57,8 @@ namespace PAG {
         void zoomCam(float angle);
 
         void moveCam(int mov, float dx, float dy);
+
+        void inicializaModelo();
 
 
 
