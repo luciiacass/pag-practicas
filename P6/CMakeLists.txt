@@ -7,7 +7,9 @@ set(CMAKE_CXX_STANDARD 20)
 file( GLOB MY_FILES *.cpp ) # Código fuente de tu proyecto
 file( GLOB GLAD_FILES GLAD/src/*.c ) # Código fuente de GLAD
 file( GLOB IMGUI_FILES imgui/src/*.cpp )
+file(GLOB OBJ_FILES "${CMAKE_SOURCE_DIR}/*.obj")
 file(COPY ${CMAKE_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/objs DESTINATION ${CMAKE_BINARY_DIR})
 
 # Indica qué archivos hay que compilar para generar el ejecutable
 add_executable( ${PROJECT_NAME} ${MY_FILES}

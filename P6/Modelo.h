@@ -4,7 +4,13 @@
 
 #ifndef P6_MODELO_H
 #define P6_MODELO_H
+#include <assimp/Importer.hpp> //lee archivos
+#include <assimp/scene.h> //representa los objetos
+#include <assimp/postprocess.h> //representa las mallas
+
+#include <vector>
 #include <string>
+#include <stdexcept>
 
 #include "glad/glad.h"
 #include <glm/glm.hpp>
@@ -16,14 +22,17 @@ namespace PAG {
         GLuint idVBO = 0;
         GLuint idIBO = 0;
 
+        int indexCount = 0;
+
         glm::mat4 matModelo = glm::mat4(1.0);
 
     public:
         Modelo();
         ~Modelo();
 
-        void create();
+        void create(); //triangulo de prácticas anteriores
         void draw();
+        void loadobj(std::string path);
 
         //metodos para que cada modelo pueda almacenar una matriz distinta
         void setMatriz(const glm::mat4& mat);

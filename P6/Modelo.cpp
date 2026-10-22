@@ -54,8 +54,104 @@ namespace PAG {
     void Modelo::draw() {
         glBindVertexArray ( idVAO );
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, idIBO );
-        glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr );
+        glDrawElements ( GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr );
 
+    }
+
+    void Modelo::loadobj(std::string path) {
+        //importar archiv
+        Assimp::Importer imp;
+
+        const aiScene* scene = imp.ReadFile(path,
+            aiProcess_JoinIdenticalVertices |
+            aiProcess_Triangulate |
+            aiProcess_GenSmoothNormals);
+        if (!scene || scene->mNumMeshes == 0) {
+            throw std::runtime_error(
+                "Error al cargar OBJ: " +
+                std::string(imp.GetErrorString())
+            );
+        }
+
+        //datos de las mallas (vertices e indices)
+        std::vector<GLfloat> vertices;
+        std::vector<GLuint> indices;
+
+        //1 obj tiene varias mallas
+        for (int i = 0; i < scene->mNumMeshes; i++) {
+            aiMesh* malla = scene->mMeshes[i]; //malla que estamos recorriendo
+            //numero vertices almacenados para saber en que pos empezamos
+            int offset = vertices.size() / 6; //3 de pos y 3 de color
+            //vertices
+            for ( int j = 0; j < malla->mNumVertices; j++) { //todos los vertices de esa malla
+
+                aiVector3D posicion = malla->mVertices[j];
+
+                // pos de cada vertice
+                vertices.push_back(posicion.x);
+                vertices.push_back(posicion.y);
+                vertices.push_back(posicion.z);
+
+                // color blanco
+                vertices.push_back(1.0f);
+                vertices.push_back(1.0f);
+                vertices.push_back(1.0f);
+            }
+
+            //caras de la malla en triangulos
+            for (int j = 0; j < malla->mNumFaces; j++) {
+
+                aiFace cara = malla->mFaces[j];
+
+                for (int k = 0; k < cara.mNumIndices; k++) {
+                    indices.push_back(offset + cara.mIndices[k]); //3 vertices de cada cara
+                }
+            }
+        }
+
+        //buffers de OpenGL
+        //VAO
+        glGenVertexArrays(1, &idVAO);
+        glBindVertexArray(idVAO);
+
+        //VBO
+        glGenBuffers(1, &idVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, idVBO);
+
+        glBufferData(
+            GL_ARRAY_BUFFER,
+            vertices.size() * sizeof(GLfloat),
+            vertices.data(),
+            GL_STATIC_DRAW
+        );
+
+        glVertexAttribPointer( //POS
+            0, 3, GL_FLOAT, GL_FALSE,
+            6 * sizeof(GLfloat), nullptr
+        );
+        glEnableVertexAttribArray(0);
+
+        glVertexAttribPointer( //COLOR
+            1, 3, GL_FLOAT, GL_FALSE,
+            6 * sizeof(GLfloat),
+            reinterpret_cast<void*>(3 * sizeof(GLfloat))
+        );
+        glEnableVertexAttribArray(1);
+
+        //IBO
+        glGenBuffers(1, &idIBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIBO);
+
+        glBufferData(
+            GL_ELEMENT_ARRAY_BUFFER,
+            indices.size() * sizeof(GLuint),
+            indices.data(),
+            GL_STATIC_DRAW
+        );
+
+        indexCount = int(indices.size());
+
+        glBindVertexArray(0);
     }
 
     void Modelo::setMatriz(const glm::mat4& mat) {

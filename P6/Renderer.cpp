@@ -194,7 +194,7 @@ namespace PAG {
     //    modelo.create();
     //}
 
-    void Renderer::inicializaModelos() {
+    void Renderer::inicializaModelos() { //probar dos triangulos en la interfaz
         //creacion de modelos
         Modelo* m1 = new Modelo();
         m1->create();
@@ -224,6 +224,13 @@ namespace PAG {
         }
 
         modelos.clear();
+    }
+
+    void Renderer::loadOBJ(std::string path) {
+        Modelo* nuevoModelo = new Modelo();
+
+        nuevoModelo->loadobj(path);
+        modelos.push_back(nuevoModelo);
     }
 
 
