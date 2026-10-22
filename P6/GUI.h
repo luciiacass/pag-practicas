@@ -8,6 +8,9 @@
 #include <string>
 #include <vector>
 #include <GLFW/glfw3.h>
+#include <imgui.h>
+#include "imfilebrowser.h"
+
 
 namespace PAG {
     class GUI {
@@ -30,12 +33,20 @@ namespace PAG {
         float latitude = 5.0;
         float longitude = 5.0;
 
+        ImGui::FileBrowser file;
+
+        // Control de modelos
+        std::string rutaModelo;
+        bool cargarModelo = false;
+        bool eliminarModelo = false;
+        int modeloSeleccionado = -1;
+        std::string archivoSeleccionado;
+
         void messagesWindow ();
         void backgroundWindow ();
         void shaderWindow();
         void cameraWindow();
-
-
+        void modelsWindow();
 
     public:
         virtual ~GUI ();
@@ -65,6 +76,11 @@ namespace PAG {
         float getOrbitLongitude();
         int getCamMov();
         bool movementMouse();
+
+        bool hasLoadModelPressed();
+        std::string getModelPath();
+        bool hasDeleteModelPressed();
+        int getSelectedModel();
 
 
 

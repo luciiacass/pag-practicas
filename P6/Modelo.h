@@ -26,6 +26,8 @@ namespace PAG {
 
         glm::mat4 matModelo = glm::mat4(1.0);
 
+        std::string nombre;
+
     public:
         Modelo();
         ~Modelo();
@@ -37,6 +39,9 @@ namespace PAG {
         //metodos para que cada modelo pueda almacenar una matriz distinta
         void setMatriz(const glm::mat4& mat);
         const glm::mat4& getMatriz();
+        const std::string& getNombre();
+
+
     };
 } // PAG
 

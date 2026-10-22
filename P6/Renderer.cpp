@@ -233,5 +233,28 @@ namespace PAG {
         modelos.push_back(nuevoModelo);
     }
 
+    void Renderer::eliminaModelo(int indice) {
+
+        if (indice < 0 || indice >= modelos.size()) {
+            throw std::runtime_error("Indice de modelo no valido");
+        }
+
+        delete modelos[indice];
+        modelos.erase(modelos.begin() + indice);
+    }
+
+    int Renderer::getNumModelos()  {
+        return int(modelos.size());
+    }
+
+    std::string Renderer::getNombreModelo(int indice) {
+
+        if (indice < 0 || indice >= modelos.size()) {
+            return "";
+        }
+
+        return modelos[indice]->getNombre();
+    }
+
 
 } // PAG

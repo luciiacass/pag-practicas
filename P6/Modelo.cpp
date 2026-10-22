@@ -1,6 +1,7 @@
 //
 // Created by luuca on 21/10/2026.
 //
+#include <filesystem>
 
 #include "Modelo.h"
 
@@ -72,6 +73,8 @@ namespace PAG {
                 std::string(imp.GetErrorString())
             );
         }
+
+        nombre = std::filesystem::path(path).filename().string();
 
         //datos de las mallas (vertices e indices)
         std::vector<GLfloat> vertices;
@@ -160,6 +163,10 @@ namespace PAG {
 
     const glm::mat4& Modelo::getMatriz() {
         return matModelo;
+    }
+
+    const std::string& Modelo::getNombre() {
+        return nombre;
     }
 
 

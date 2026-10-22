@@ -26,6 +26,7 @@ void render ( GLFWwindow* window ) {
         PAG::Renderer::getInstancia().setScreenColor ( PAG::GUI::getInstancia().getBgColor() );
     }
 
+    //cargar shader
     if (PAG::GUI::getInstancia().hasLoadShaderPressed()) {
 
         try {
@@ -36,6 +37,40 @@ void render ( GLFWwindow* window ) {
             PAG::GUI::getInstancia().addMessage(
                 "Shader program cargado: " +
                 PAG::GUI::getInstancia().getShaderName()
+            );
+        }
+        catch (const std::exception& e) {
+            PAG::GUI::getInstancia().addMessage(e.what());
+        }
+    }
+
+    //cargar modelo
+    if (PAG::GUI::getInstancia().hasLoadModelPressed()) {
+
+        try {
+            std::string ruta = PAG::GUI::getInstancia().getModelPath();
+
+            PAG::Renderer::getInstancia().loadOBJ(ruta);
+
+            PAG::GUI::getInstancia().addMessage(
+                "Modelo cargado: " + ruta
+            );
+        }
+        catch (const std::exception& e) {
+            PAG::GUI::getInstancia().addMessage(e.what());
+        }
+    }
+
+    //eliminar modelo
+    if (PAG::GUI::getInstancia().hasDeleteModelPressed()) {
+
+        try {
+            int indice = PAG::GUI::getInstancia().getSelectedModel();
+
+            PAG::Renderer::getInstancia().eliminaModelo(indice);
+
+            PAG::GUI::getInstancia().addMessage(
+                "Modelo eliminado: " + std::to_string(indice + 1)
             );
         }
         catch (const std::exception& e) {
@@ -209,14 +244,14 @@ int main()
     //    PAG::GUI::getInstancia().addMessage ( e.what() );
     //}
     //PAG::Renderer::getInstancia().inicializaModelos();
-    try {
-        PAG::Renderer::getInstancia().loadOBJ(
-            "objs/Panther.obj"
-        );
-    }
-    catch (const std::exception& e) {
-        PAG::GUI::getInstancia().addMessage(e.what());
-    }
+    //try {
+    //    PAG::Renderer::getInstancia().loadOBJ(
+    //        "objs/Panther.obj"
+    //    );
+    //}
+    //catch (const std::exception& e) {
+    //    PAG::GUI::getInstancia().addMessage(e.what());
+    //}
 
     // - Ciclo de eventos de la aplicación. La condición de parada es que la
     // ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el
@@ -233,6 +268,7 @@ int main()
     // - Una vez terminado el ciclo de eventos, liberar recursos, etc.
     std::cout << "Finishing application pag prueba" << std::endl;
 
+    PAG::Renderer::getInstancia().finalizaModelos();
     PAG::GUI::getInstancia().shutdown();
     glfwDestroyWindow ( window ); // - Cerramos y destruimos la ventana de la aplicación.
     window = nullptr;

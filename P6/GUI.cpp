@@ -11,11 +11,16 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_stdlib.h>
+#include <filesystem>
+#include <string>
 
 namespace PAG {
     GUI* GUI::instancia = nullptr;
 
-    GUI::GUI () { }
+    GUI::GUI () {
+        file.SetTitle("Seleccionar modelo OBJ");
+        file.SetTypeFilters({".obj"});
+    }
 
     GUI::~GUI () { }
 
@@ -53,6 +58,7 @@ namespace PAG {
         backgroundWindow ();
         shaderWindow ();
         cameraWindow();
+        modelsWindow();
     }
 
     void GUI::render () {
@@ -312,6 +318,98 @@ namespace PAG {
         ImGui::End();
     }
 
+
+
+void GUI::modelsWindow() {
+
+    ImGui::SetNextWindowPos(
+        ImVec2(715, 390), ImGuiCond_Always
+    );
+
+    ImGui::SetNextWindowSize(
+        ImVec2(300, 175), ImGuiCond_Always
+    );
+
+    if (ImGui::Begin("Gestion de modelos")) {
+
+        // Mostrar archivos OBJ disponibles
+        if (ImGui::BeginCombo(
+            "##archivos",
+            archivoSeleccionado.empty()
+                ? "Seleccionar OBJ"
+                : archivoSeleccionado.c_str()
+        )) {
+
+            std::filesystem::path carpeta = "objs";
+
+            if (std::filesystem::exists(carpeta)) {
+                for (const auto& archivo :
+                     std::filesystem::directory_iterator(carpeta)) {
+
+                    if (!archivo.is_regular_file())
+                        continue;
+
+                    if (archivo.path().extension() != ".obj")
+                        continue;
+
+                    std::string nombre =
+                        archivo.path().filename().string();
+
+                    if (ImGui::Selectable(nombre.c_str())) {
+                        archivoSeleccionado = nombre;
+                    }
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+
+        // Cargar el archivo elegido
+        if (ImGui::Button("Cargar modelo OBJ") &&
+            !archivoSeleccionado.empty()) {
+
+            rutaModelo =
+                (std::filesystem::path("objs") /
+                 archivoSeleccionado).string();
+
+            cargarModelo = true;
+        }
+
+        ImGui::Separator();
+
+        int numModelos =
+            Renderer::getInstancia().getNumModelos();
+
+        ImGui::Text("Modelos cargados: %d", numModelos);
+
+        if (modeloSeleccionado >= numModelos)
+            modeloSeleccionado = numModelos - 1;
+
+        for (int i = 0; i < numModelos; i++) {
+
+            std::string nombre =
+                "Modelo " + std::to_string(i + 1) +
+                " - " +
+                Renderer::getInstancia().getNombreModelo(i);
+
+            if (ImGui::Selectable(
+                nombre.c_str(), modeloSeleccionado == i)) {
+
+                modeloSeleccionado = i;
+                }
+        }
+
+        if (modeloSeleccionado >= 0) {
+            if (ImGui::Button("Eliminar modelo")) {
+                eliminarModelo = true;
+            }
+        }
+    }
+
+    ImGui::End();
+}
+
+
     float GUI::getCameraAngle()  {
         return camAngle;
     }
@@ -336,6 +434,25 @@ namespace PAG {
         return ImGui::GetIO().WantCaptureMouse;
     }
 
+    bool GUI::hasLoadModelPressed() {
+        bool aux = cargarModelo;
+        cargarModelo = false;
+        return aux;
+    }
+
+    std::string GUI::getModelPath() {
+        return rutaModelo;
+    }
+
+    bool GUI::hasDeleteModelPressed() {
+        bool aux = eliminarModelo;
+        eliminarModelo = false;
+        return aux;
+    }
+
+    int GUI::getSelectedModel()  {
+        return modeloSeleccionado;
+    }
 
 
 

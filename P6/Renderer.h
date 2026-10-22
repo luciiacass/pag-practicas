@@ -65,6 +65,9 @@ namespace PAG {
         void inicializaModelos();
         void finalizaModelos();
         void loadOBJ(std::string path);
+        int getNumModelos();
+        void eliminaModelo(int index);
+        std::string getNombreModelo(int indice);
 
 
     };
