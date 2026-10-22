@@ -84,9 +84,9 @@ namespace PAG {
         glm::mat4 M(1.0);
 
         //transformacion
-        M = glm::translate(M, pos);
-        M = glm::rotate(M, angleRad, v);
         M = glm::translate(M, -pos);
+        M = glm::rotate(M, angleRad, v);
+        M = glm::translate(M, pos);
 
         // aplicada a 'la'
         la = glm::vec3( M * glm::vec4(la, 1.0f));

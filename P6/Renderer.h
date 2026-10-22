@@ -12,6 +12,8 @@
 
 #include <string>
 #include <GLFW/glfw3.h>
+#include <vector>
+#include <memory>
 
 namespace PAG {
     class Renderer {
@@ -27,7 +29,8 @@ namespace PAG {
 
         Shader shader;
         Camera camera;
-        Modelo modelo;
+        //Modelo modelo;
+        std::vector<Modelo*> modelos;
 
     public:
         virtual ~Renderer ();
@@ -58,7 +61,9 @@ namespace PAG {
 
         void moveCam(int mov, float dx, float dy);
 
-        void inicializaModelo();
+        //void inicializaModelo();
+        void inicializaModelos();
+        void finalizaModelos();
 
 
 

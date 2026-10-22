@@ -7,6 +7,7 @@
 #include <string>
 
 #include "glad/glad.h"
+#include <glm/glm.hpp>
 
 namespace PAG {
     class Modelo {
@@ -15,12 +16,18 @@ namespace PAG {
         GLuint idVBO = 0;
         GLuint idIBO = 0;
 
+        glm::mat4 matModelo = glm::mat4(1.0);
+
     public:
         Modelo();
         ~Modelo();
 
         void create();
         void draw();
+
+        //metodos para que cada modelo pueda almacenar una matriz distinta
+        void setMatriz(const glm::mat4& mat);
+        const glm::mat4& getMatriz();
     };
 } // PAG
 

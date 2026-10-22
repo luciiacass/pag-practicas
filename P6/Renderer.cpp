@@ -9,6 +9,8 @@
 #include <stdexcept>
 #include <fstream>
 #include <sstream>
+#include <glm/gtc/matrix_transform.hpp>
+#include <memory>
 
 #include "GUI.h"
 
@@ -51,7 +53,13 @@ namespace PAG {
         GLint location = glGetUniformLocation ( shader.getId(), "MVP" );
         glUniformMatrix4fv ( location, 1, GL_FALSE, &MVP[0][0] );
 
-        modelo.draw();
+        //modelo.draw();
+        for (Modelo* modelo : modelos) {
+            glm::mat4 M = modelo->getMatriz();
+            glm::mat4 MVP = P * V * M;
+            glUniformMatrix4fv ( location, 1, GL_FALSE, &MVP[0][0] );
+            modelo->draw();
+        }
 
     }
 
@@ -182,17 +190,41 @@ namespace PAG {
         }
     }
 
-    void Renderer::inicializaModelo() {
-        modelo.create();
+    //void Renderer::inicializaModelo() {
+    //    modelo.create();
+    //}
+
+    void Renderer::inicializaModelos() {
+        //creacion de modelos
+        Modelo* m1 = new Modelo();
+        m1->create();
+
+        Modelo* m2 = new Modelo();
+        m2->create();
+
+        //matrices de transformacion
+        glm::mat4 mat1 = glm::mat4(1);
+        mat1 = glm::translate (mat1, glm::vec3(0, 1, -5));
+
+        glm::mat4 mat2 = glm::mat4(1);
+        mat2 = glm::translate (mat2, glm::vec3(2, -1, -5));
+
+        //adjuntar matrices al modelo
+        m1->setMatriz(mat1);
+        m2->setMatriz(mat2);
+
+        //añadir modelos al vector
+        modelos.push_back(m1);
+        modelos.push_back(m2);
     }
 
+    void Renderer::finalizaModelos() {
+        for (Modelo* modelo : modelos) {
+            delete modelo;
+        }
 
-
-
-
-
-
-
+        modelos.clear();
+    }
 
 
 } // PAG

@@ -58,5 +58,13 @@ namespace PAG {
 
     }
 
+    void Modelo::setMatriz(const glm::mat4& mat) {
+        matModelo = mat;
+    }
+
+    const glm::mat4& Modelo::getMatriz() {
+        return matModelo;
+    }
+
 
 } // PAG
