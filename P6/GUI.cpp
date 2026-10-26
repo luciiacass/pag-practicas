@@ -59,6 +59,7 @@ namespace PAG {
         shaderWindow ();
         cameraWindow();
         modelsWindow();
+        transformWindow();
     }
 
     void GUI::render () {
@@ -410,6 +411,48 @@ void GUI::modelsWindow() {
 }
 
 
+    void GUI::transformWindow() {
+
+        ImGui::SetNextWindowPos(ImVec2(395, 390), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(300, 175), ImGuiCond_Always);
+
+        if (ImGui::Begin("Transformaciones")) {
+
+            if (modeloSeleccionado == -1) {
+
+                ImGui::Text("Selecciona un modelo");
+
+            } else {
+
+
+                ImGui::Text("Traslacion");
+                ImGui::SameLine(100);
+                ImGui::SetNextItemWidth(185);
+                ImGui::DragFloat3("##traslacion", traslacion, 0.1f);
+
+                ImGui::Text("Rotacion");
+                ImGui::SameLine(100);
+                ImGui::SetNextItemWidth(185);
+                ImGui::DragFloat3("##rotacion", rotacion, 1.0f);
+
+                ImGui::Text("Escalado");
+                ImGui::SameLine(100);
+                ImGui::SetNextItemWidth(185);
+                ImGui::DragFloat3("##escala", escala, 0.01f, 0.01f, 10.0f);
+
+                ImGui::Separator();
+
+                if (ImGui::Button("Aplicar transformacion")) {
+                    transformacion = true;
+                }
+
+            }
+        }
+
+        ImGui::End();
+    }
+
+
     float GUI::getCameraAngle()  {
         return camAngle;
     }
@@ -452,6 +495,26 @@ void GUI::modelsWindow() {
 
     int GUI::getSelectedModel()  {
         return modeloSeleccionado;
+    }
+
+    bool GUI::hasTransformPressed() {
+
+        bool aux = transformacion;
+        transformacion = false;
+
+        return aux;
+    }
+
+     float* GUI::getTraslacion() {
+        return traslacion;
+    }
+
+     float* GUI::getRotacion() {
+        return rotacion;
+    }
+
+     float* GUI::getEscala() {
+        return escala;
     }
 
 

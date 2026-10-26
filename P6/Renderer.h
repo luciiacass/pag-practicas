@@ -69,6 +69,9 @@ namespace PAG {
         void eliminaModelo(int index);
         std::string getNombreModelo(int indice);
 
+        bool solapamiento(Modelo* modelo);
+        void transformarModelo(int indice, float* traslacion, float* rotacion, float* escala);
+
 
     };
 } // PAG

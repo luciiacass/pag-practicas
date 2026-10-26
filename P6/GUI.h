@@ -41,12 +41,18 @@ namespace PAG {
         bool eliminarModelo = false;
         int modeloSeleccionado = -1;
         std::string archivoSeleccionado;
+        //transformacion de los modelos
+        float traslacion[3] = {0.0f, 0.0f, 0.0f};
+        float rotacion[3] = {0.0f, 0.0f, 0.0f};
+        float escala[3] = {1.0f, 1.0f, 1.0f};
+        bool transformacion = false;
 
         void messagesWindow ();
         void backgroundWindow ();
         void shaderWindow();
         void cameraWindow();
         void modelsWindow();
+        void transformWindow();
 
     public:
         virtual ~GUI ();
@@ -81,6 +87,11 @@ namespace PAG {
         std::string getModelPath();
         bool hasDeleteModelPressed();
         int getSelectedModel();
+
+        bool hasTransformPressed();
+        float* getTraslacion();
+        float* getRotacion();
+        float* getEscala();
 
 
 

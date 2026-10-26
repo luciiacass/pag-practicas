@@ -78,6 +78,21 @@ void render ( GLFWwindow* window ) {
         }
     }
 
+
+    if (PAG::GUI::getInstancia().hasTransformPressed()) {
+
+        int indice =
+            PAG::GUI::getInstancia().getSelectedModel();
+
+        PAG::Renderer::getInstancia().transformarModelo(
+            indice,
+            PAG::GUI::getInstancia().getTraslacion(),
+            PAG::GUI::getInstancia().getRotacion(),
+            PAG::GUI::getInstancia().getEscala()
+        );
+    }
+
+
     PAG::Renderer::getInstancia().refresh();  // Dibuja la escena (OpenGL)
     PAG::GUI::getInstancia().render();        // La interfaz va encima
 

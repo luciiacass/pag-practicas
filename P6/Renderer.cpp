@@ -7,10 +7,9 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
-#include <fstream>
-#include <sstream>
+#include <random>
 #include <glm/gtc/matrix_transform.hpp>
-#include <memory>
+#include <glm/gtc/matrix_inverse.hpp>
 
 #include "GUI.h"
 
@@ -227,10 +226,70 @@ namespace PAG {
     }
 
     void Renderer::loadOBJ(std::string path) {
-        Modelo* nuevoModelo = new Modelo();
 
-        nuevoModelo->loadobj(path);
-        modelos.push_back(nuevoModelo);
+        Modelo* nuevoModelo = new Modelo();
+        try {
+            nuevoModelo->loadobj(path);
+
+            //matrices de la camara
+            glm::mat4 V = camera.getViewMatrix();
+            glm::mat4 P = camera.getProjectionMatrix();
+            float distancia = 5.0f;
+
+            //limites en funcion de las coordenadas visibles de la camara
+            float maxX = distancia / P[0][0];
+            float minX = -maxX;
+
+            float maxY = distancia / P[1][1];
+            float minY = -maxY;
+
+            //pos aleatoria dentro de las coordenadas anteriores
+            static std::mt19937 generador(std::random_device{}());
+
+            std::uniform_real_distribution<float> randomX(minX, maxX);
+            std::uniform_real_distribution<float> randomY(minY, maxY);
+
+            //centro de la caja limitada de los modelos
+            glm::vec3 centro = (nuevoModelo->getmin() + nuevoModelo->getmax()) / 2.0f;
+            //coordenadas -> 3D
+            glm::mat4 inversaV = glm::inverse(V);
+
+            bool encontrado = false;
+
+            for (int intento = 0; intento < 100; intento++) {
+
+                float x = randomX(generador);
+                float y = randomY(generador);
+
+                glm::vec4 puntoCamara(x, y, -distancia, 1.0f);
+
+                glm::vec3 puntoMundo = glm::vec3(inversaV * puntoCamara);
+
+                glm::vec3 traslacion = puntoMundo - centro;
+
+                glm::mat4 M(1.0f);
+
+                M = glm::translate(M, traslacion);
+
+                nuevoModelo->setMatriz(M);
+
+                if (!solapamiento(nuevoModelo)) {
+                    encontrado = true;
+                    break;
+                }
+            }
+
+            if (!encontrado) {
+                throw std::runtime_error("No se ha encontrado una posicion libre");
+            }
+
+            modelos.push_back(nuevoModelo);
+
+        }
+        catch (...) {
+            delete nuevoModelo;
+            throw;
+        }
     }
 
     void Renderer::eliminaModelo(int indice) {
@@ -255,6 +314,72 @@ namespace PAG {
 
         return modelos[indice]->getNombre();
     }
+
+    bool Renderer::solapamiento(Modelo* nuevomodelo) {
+
+        if (modelos.empty()) {
+            return false;
+        }
+        //pos de la matriz de modelado
+        glm::vec3 pos1 = glm::vec3(nuevomodelo->getMatriz()[3]);
+        //pos caja nuevo modelo
+        glm::vec3 min1 = nuevomodelo->getmin() + pos1;
+        glm::vec3 max1 = nuevomodelo->getmax() + pos1;
+
+        for (Modelo* modelo : modelos) {
+            glm::vec3 pos2 = glm::vec3(modelo->getMatriz()[3]);
+            glm::vec3 min2 = modelo->getmin() + pos2;
+            glm::vec3 max2 = modelo->getmax() + pos2;
+
+            float margen = 0.2f;
+
+            //solapamiento en cada eje
+            bool solapaX = min1.x < max2.x + margen &&
+                           max1.x + margen > min2.x;
+
+            bool solapaY = min1.y < max2.y + margen &&
+                           max1.y + margen > min2.y;
+
+            bool solapaZ = min1.z < max2.z + margen &&
+                           max1.z + margen > min2.z;
+
+            if (solapaX && solapaY && solapaZ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    void Renderer::transformarModelo(int indice, float* traslacion, float* rotacion, float* escala) {
+
+        if (indice < 0 || indice >= modelos.size()) {
+            return;
+        }
+
+        Modelo* modelo = modelos[indice];
+
+        glm::mat4 M = modelo->getMatriz();
+
+        // traslaciones
+        glm::mat4 T = glm::translate(glm::mat4(1.0f),glm::vec3(traslacion[0], traslacion[1], traslacion[2]));
+
+        M = T * M;
+
+        // rotaciones
+        M = glm::rotate(M, glm::radians(rotacion[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+
+        M = glm::rotate(M, glm::radians(rotacion[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        M = glm::rotate(M, glm::radians(rotacion[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+
+        // escalado
+        M = glm::scale( M, glm::vec3(escala[0], escala[1], escala[2]));
+
+        modelo->setMatriz(M);
+    }
+
 
 
 } // PAG

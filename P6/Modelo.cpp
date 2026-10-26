@@ -2,8 +2,11 @@
 // Created by luuca on 21/10/2026.
 //
 #include <filesystem>
+#include <limits>
 
 #include "Modelo.h"
+
+#include <iostream>
 
 namespace PAG {
     Modelo::Modelo() {}
@@ -74,6 +77,10 @@ namespace PAG {
             );
         }
 
+        // inicializacion caja limitadora
+        min = glm::vec3(std::numeric_limits<float>::max());
+        max = glm::vec3(std::numeric_limits<float>::lowest());
+
         nombre = std::filesystem::path(path).filename().string();
 
         //datos de las mallas (vertices e indices)
@@ -96,10 +103,50 @@ namespace PAG {
                 vertices.push_back(posicion.z);
 
                 // color blanco
-                vertices.push_back(1.0f);
-                vertices.push_back(1.0f);
-                vertices.push_back(1.0f);
+                //vertices.push_back(1.0f);
+                //vertices.push_back(1.0f);
+                //vertices.push_back(1.0f);
+
+                //algo de sombras
+                aiVector3D normal = malla->mNormals[j];
+
+                glm::vec3 luz = glm::normalize(glm::vec3(0.5f, 1.0f, 0.8f));
+
+                glm::vec3 N = glm::normalize(
+                    glm::vec3(normal.x, normal.y, normal.z)
+                );
+
+                float intensidad = std::max(glm::dot(N, luz), 0.0f);
+
+                float color = 0.3f + 0.7f * intensidad;
+
+                vertices.push_back(color);
+                vertices.push_back(color);
+                vertices.push_back(color);
+
+
+                // posicion caja limitadora
+                min.x = std::min(min.x, posicion.x);
+                min.y = std::min(min.y, posicion.y);
+                min.z = std::min(min.z, posicion.z);
+
+                max.x = std::max(max.x, posicion.x);
+                max.y = std::max(max.y, posicion.y);
+                max.z = std::max(max.z, posicion.z);
+
             }
+
+            std::cout << "Bounding Box del modelo: " << path << std::endl;
+
+            std::cout << "Min: "
+                      << min.x << ", "
+                      << min.y << ", "
+                      << min.z << std::endl;
+
+            std::cout << "Max: "
+                      << max.x << ", "
+                      << max.y << ", "
+                      << max.z << std::endl;
 
             //caras de la malla en triangulos
             for (int j = 0; j < malla->mNumFaces; j++) {
@@ -110,6 +157,8 @@ namespace PAG {
                     indices.push_back(offset + cara.mIndices[k]); //3 vertices de cada cara
                 }
             }
+
+
         }
 
         //buffers de OpenGL
@@ -167,6 +216,14 @@ namespace PAG {
 
     const std::string& Modelo::getNombre() {
         return nombre;
+    }
+
+    const glm::vec3& Modelo::getmin() {
+        return min;
+    }
+
+    const glm::vec3& Modelo::getmax() {
+        return max;
     }
 
 

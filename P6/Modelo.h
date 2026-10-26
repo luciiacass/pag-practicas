@@ -28,6 +28,10 @@ namespace PAG {
 
         std::string nombre;
 
+        //coordenadas caja limitadora
+        glm::vec3 min;
+        glm::vec3 max;
+
     public:
         Modelo();
         ~Modelo();
@@ -40,6 +44,9 @@ namespace PAG {
         void setMatriz(const glm::mat4& mat);
         const glm::mat4& getMatriz();
         const std::string& getNombre();
+
+        const glm::vec3& getmin();
+        const glm::vec3& getmax();
 
 
     };
