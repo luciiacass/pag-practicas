@@ -182,3 +182,158 @@ classDiagram
     GUI ..> Renderer : solicita movimientos
     Renderer ..> GUI : consulta controles
 ```
+
+# pag-p6
+1. Posibilidad de incluir una transformación de modelado:
+Se ha definido una instacia de modelo y una matriz por cada objeto.
+Esto permite aplicar transformaciones en un objeto sin afectar a los demás.
+2. Cargar modelos en formato OBJ:
+Uso de la biblioteca Assimp con las opciones aiProcess_JoinIdenticalVertices, aiProcess_Triangulate y aiProcess_GenSmoothNormals.
+Estos atributos permiten unir los vértices, triangular las caras y generar normales suaves.
+Se recorren las mallas de cada archivo y se concatenan sus vértices e índices para almacenarlo en único conjunto de buffers
+3. Más de un modelo al mismo tiempo:
+Implementación de un vector std::vector<Modelo*> en la clase Renderer, que permite almacenar y gestionar modelos simultaneamente.
+Se ha usado punteros para acceder a los objetos creados dinámicamente, permitiendo añadirlos, eliminarlos y modificar sus transformaciones de forma individual.
+4. Carga y eliminación desde la interfaz:
+Se elige un objeto desde un desplegable que contiene una carpeta con todos los objetos.
+Se elimina seleccionandolo en el desplegable de modelos cargados.
+5. Coexistir varios modelos
+Se ha definido una 'caja delimitadora' alrededor de cada modelo para que al incluir un nuevo modelo estos no solapen.
+Para añadirlos de forma aleatoria por la pantalla, se han delimitado las coordeandas que está 'viendo' la cámara en ese momento. El centro del modelo debe ubicarse dentro de esas coordenadas.
+Si la coordenada aleatoria hace que la 'caja limitadora' solapa con algun modelo ya incluido, esta se vuelve a calcular.
+6. Transformacion de los modelos:
+Se ha implementado una nueva ventana que permite implementar transformaciones básicas en los modelos seleccionados
+7. Visualización de los modelos
+En un inicio todos los vértices de los modelos tenían asignado el color blanco, lo que impedía apreciar su volumen.
+Ahora,  se ha implementado un sombreado básico calculado a partir de las normales de los vértices y una dirección de luz fija.
+
+
+**DIAGRAMA DE CLASES UML**
+
+## Diagrama de clases UML
+
+```mermaid
+classDiagram
+    direction LR
+
+    class Renderer {
+        -static Renderer* instancia
+        -float[4] screenColor
+        -float[3] differentIncrement
+        -Shader shader
+        -Camera camera
+        -vector~Modelo*~ modelos
+        -Renderer()
+        -float color_limit(float value)
+        +static Renderer& getInstancia()
+        +refresh() void
+        +reframe(int width, int height) void
+        +depth() void
+        +loadShaderProgram(string name) void
+        +loadOBJ(string path) void
+        +eliminaModelo(int indice) void
+        +getNumModelos() int
+        +getNombreModelo(int indice) string
+        +solapamiento(Modelo* nuevo) bool
+        +transformarModelo(int indice, float* traslacion, float* rotacion, float* escala) void
+        +finalizaModelos() void
+        +moveCam(int mov, float dx, float dy) void
+    }
+
+    class Modelo {
+        -GLuint idVAO
+        -GLuint idVBO
+        -GLuint idIBO
+        -int indexCount
+        -mat4 matModelo
+        -string nombre
+        -vec3 min
+        -vec3 max
+        +Modelo()
+        +~Modelo()
+        +create() void
+        +draw() void
+        +loadobj(string path) void
+        +setMatriz(mat4 mat) void
+        +getMatriz() mat4
+        +getNombre() string
+        +getmin() vec3
+        +getmax() vec3
+    }
+
+    class Camera {
+        -vec3 pos
+        -vec3 la
+        -vec3 u
+        -vec3 v
+        -vec3 n
+        -float fovX
+        -float zNear
+        -float zFar
+        -int width
+        -int height
+        -userfriendlyAxes() void
+        +Camera()
+        +getViewMatrix() mat4
+        +getProjectionMatrix() mat4
+        +setViewport(int width, int height) void
+        +pan(float angle) void
+        +tilt(float angle) void
+        +dolly(float dx, float dz) void
+        +crane(float dy) void
+        +orbit(float latitude, float longitude) void
+        +zoom(float angle) void
+    }
+
+    class Shader {
+        -GLuint idVS
+        -GLuint idFS
+        -GLuint idSP
+        -readFile(string filename) string
+        +Shader()
+        +~Shader()
+        +create(string name) void
+        +getId() GLuint
+    }
+
+    class GUI {
+        -static GUI* instancia
+        -vector~string~ messages
+        -float[3] bgColor
+        -string shaderName
+        -int camMov
+        -string rutaModelo
+        -string archivoSeleccionado
+        -int modeloSeleccionado
+        -float[3] traslacion
+        -float[3] rotacion
+        -float[3] escala
+        -bool cargarModelo
+        -bool eliminarModelo
+        -bool transformacion
+        -GUI()
+        -modelsWindow() void
+        -transformWindow() void
+        -cameraWindow() void
+        +static GUI& getInstancia()
+        +init(GLFWwindow* window) void
+        +shutdown() void
+        +newFrame() void
+        +draw() void
+        +render() void
+        +addMessage(string message) void
+        +hasLoadModelPressed() bool
+        +hasDeleteModelPressed() bool
+        +hasTransformPressed() bool
+        +getSelectedModel() int
+        +getModelPath() string
+        +getTraslacion() float*
+        +getRotacion() float*
+        +getEscala() float*
+    }
+
+    Renderer "1" *-- "1" Shader 
+    Renderer "1" *-- "1" Camera 
+    Renderer "1" *-- "0..*" Modelo 
+    GUI ..> Renderer 
+```
