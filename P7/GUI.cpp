@@ -31,6 +31,18 @@ namespace PAG {
         return *instancia;
     }
 
+    void GUI::posicionarVentana() {
+        ImGui::SetNextWindowPos(
+            ImVec2(10.0f, siguienteY),
+            ImGuiCond_Always
+        );
+
+        ImGui::SetNextWindowCollapsed(
+            true,
+            ImGuiCond_FirstUseEver
+        );
+    }
+
     void GUI::init ( GLFWwindow* window ) {
         IMGUI_CHECKVERSION ();
         ImGui::CreateContext ();
@@ -54,6 +66,8 @@ namespace PAG {
     }
 
     void GUI::draw () {
+        siguienteY = 10.0f;
+
         messagesWindow ();
         backgroundWindow ();
         shaderWindow ();
@@ -71,9 +85,7 @@ namespace PAG {
     // - Ventana donde se muestran los mensajes de la aplicación
     void GUI::messagesWindow () {
 
-        ImGui::SetNextWindowPos ( ImVec2 ( 10, 10 ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize ( ImVec2 ( 300, 150 ), ImGuiCond_Once );
-
+        posicionarVentana();
 
         if ( ImGui::Begin ( "Mensajes" ) ) {
             ImGui::SetWindowFontScale ( 1.0f );
@@ -86,13 +98,16 @@ namespace PAG {
                 ImGui::SetScrollHereY ( 1.0f );
             }
         }
+
+        siguienteY += ImGui::GetWindowHeight()
+            + separacionVentanas;
+
         ImGui::End ();
     }
 
     // - Ventana con el selector del color de fondo
     void GUI::backgroundWindow () {
-        ImGui::SetNextWindowPos(ImVec2(720, 10), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(294, 300), ImGuiCond_Always);
+        posicionarVentana();
 
         if ( ImGui::Begin ( "Color de fondo", nullptr, ImGuiWindowFlags_AlwaysAutoResize ) ) {
             ImGui::SetWindowFontScale ( 1.0f );
@@ -102,6 +117,10 @@ namespace PAG {
                 colorChanged = true;
             }
         }
+
+        siguienteY += ImGui::GetWindowHeight()
+              + separacionVentanas;
+
         ImGui::End ();
     }
 
@@ -136,8 +155,7 @@ namespace PAG {
 
     void GUI::shaderWindow() {
 
-        ImGui::SetNextWindowPos(ImVec2(10, 170), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(300, 110), ImGuiCond_Always);
+        posicionarVentana();
 
         if (ImGui::Begin(
                 "Shader Program",
@@ -157,6 +175,9 @@ namespace PAG {
                 ImGui::Button("Load");
             }
 
+        siguienteY += ImGui::GetWindowHeight()
+            + separacionVentanas;
+
         ImGui::End();
     }
 
@@ -175,10 +196,7 @@ namespace PAG {
 
     void GUI::cameraWindow() {
 
-        //pos de la ventana
-        ImGui::SetNextWindowPos(ImVec2(10, 390), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(310, 175), ImGuiCond_Always);
-
+        posicionarVentana();
         if (ImGui::Begin("Camara virtual")) {
 
             // opciones del desplegable
@@ -317,6 +335,8 @@ namespace PAG {
             }
         }
 
+        siguienteY += ImGui::GetWindowHeight()
+            + separacionVentanas;
         ImGui::End();
     }
 
@@ -324,13 +344,7 @@ namespace PAG {
 
 void GUI::modelsWindow() {
 
-    ImGui::SetNextWindowPos(
-        ImVec2(715, 390), ImGuiCond_Always
-    );
-
-    ImGui::SetNextWindowSize(
-        ImVec2(300, 175), ImGuiCond_Always
-    );
+    posicionarVentana();
 
     if (ImGui::Begin("Gestion de modelos")) {
 
@@ -422,14 +436,16 @@ void GUI::modelsWindow() {
         }
     }
 
+        siguienteY += ImGui::GetWindowHeight()
+            + separacionVentanas;
+
     ImGui::End();
 }
 
 
     void GUI::transformWindow() {
 
-        ImGui::SetNextWindowPos(ImVec2(395, 390), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(300, 175), ImGuiCond_Always);
+        posicionarVentana();
 
         if (ImGui::Begin("Transformaciones")) {
 
@@ -463,6 +479,9 @@ void GUI::modelsWindow() {
 
             }
         }
+
+        siguienteY += ImGui::GetWindowHeight()
+      + separacionVentanas;
 
         ImGui::End();
     }
@@ -535,10 +554,7 @@ void GUI::modelsWindow() {
 
     void GUI::materialWindow() {
 
-        ImGui::SetNextWindowPos(
-            ImVec2(10, 280),
-            ImGuiCond_Once
-        );
+        posicionarVentana();
 
         if (ImGui::Begin(
             "Propiedades del material",
@@ -573,6 +589,9 @@ void GUI::modelsWindow() {
                 }
             }
         }
+
+        siguienteY += ImGui::GetWindowHeight()
+      + separacionVentanas;
 
         ImGui::End();
     }

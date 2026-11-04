@@ -18,6 +18,9 @@ namespace PAG {
         static GUI* instancia;
         GUI ();
 
+        float siguienteY = 10.0f;
+        const float separacionVentanas = 5.0f;
+
         std::vector<std::string> messages;        ///< Mensajes de la aplicación
         float bgColor[3] = { 0.6f, 0.6f, 0.6f };  ///< Color elegido en el control
         bool colorChanged = false;                ///< true si el usuario lo ha cambiado
@@ -66,6 +69,8 @@ namespace PAG {
     public:
         virtual ~GUI ();
         static GUI& getInstancia ();
+
+        void posicionarVentana();
 
         void init ( GLFWwindow* window );
         void shutdown ();
