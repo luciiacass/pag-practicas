@@ -92,6 +92,19 @@ void render ( GLFWwindow* window ) {
         );
     }
 
+    //cargar materiales
+    if (PAG::GUI::getInstancia().hasMaterialChanged()) {
+
+        PAG::Renderer::getInstancia().cambiarMaterialModelos(
+            PAG::GUI::getInstancia().getColorAmbiente(),
+            PAG::GUI::getInstancia().getColorDifuso(),
+            PAG::GUI::getInstancia().getColorEspecular(),
+            PAG::GUI::getInstancia().getExponente()
+        );
+    }
+
+
+
 
     PAG::Renderer::getInstancia().refresh();  // Dibuja la escena (OpenGL)
     PAG::GUI::getInstancia().render();        // La interfaz va encima
@@ -244,29 +257,9 @@ int main()
     PAG::GUI::getInstancia().setBgColor ( PAG::Renderer::getInstancia().getScreenColor() );
 
 
-
-
-
     // - Le decimos a OpenGL que tenga en cuenta la profundidad a la hora de
     // dibujar.
     PAG::Renderer::getInstancia().depth();
-    // El triangulo no se carga de primeras, si no al cargar el shader
-    //try {
-    //    PAG::Renderer::getInstancia().loadShaderProgram("shaders/pag03");
-    //    //EJEMPLO FALLO:
-    //    //PAG::Renderer::getInstancia().creaShaderProgram("shaders/pag0");
-    //} catch ( const std::exception& e ) {
-    //    PAG::GUI::getInstancia().addMessage ( e.what() );
-    //}
-    //PAG::Renderer::getInstancia().inicializaModelos();
-    //try {
-    //    PAG::Renderer::getInstancia().loadOBJ(
-    //        "objs/Panther.obj"
-    //    );
-    //}
-    //catch (const std::exception& e) {
-    //    PAG::GUI::getInstancia().addMessage(e.what());
-    //}
 
     // - Ciclo de eventos de la aplicación. La condición de parada es que la
     // ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el

@@ -52,14 +52,27 @@ namespace PAG {
         GLint location = glGetUniformLocation ( shader.getId(), "MVP" );
         glUniformMatrix4fv ( location, 1, GL_FALSE, &MVP[0][0] );
 
+        GLint locationDifuso = glGetUniformLocation(
+            shader.getId(), "materialDifuso"
+        );
+
         //modelo.draw();
         for (Modelo* modelo : modelos) {
             glm::mat4 M = modelo->getMatriz();
             glm::mat4 MVP = P * V * M;
             glUniformMatrix4fv ( location, 1, GL_FALSE, &MVP[0][0] );
+
+            //material
+            if (locationDifuso != -1) {
+                glUniform3fv(
+                    locationDifuso,
+                    1,
+                    modelo->getMaterial().getDifuso()
+                );
+            }
+
             modelo->draw();
         }
-
     }
 
     //Actualiza tanto el viewport de OpenGL como las dimensiones de la camara
@@ -383,6 +396,25 @@ namespace PAG {
     Material& Renderer::getMaterial() {
         return material;
     }
+
+
+    void Renderer::cambiarMaterialModelos(
+        float* ambiente,
+        float* difuso,
+        float* especular,
+        float exponente
+    ) {
+        for (Modelo* modelo : modelos) {
+
+            Material& mat = modelo->getMaterial();
+
+            mat.setAmbiente(ambiente);
+            mat.setDifuso(difuso);
+            mat.setEspecular(especular);
+            mat.setExponente(exponente);
+        }
+    }
+
 
 
 

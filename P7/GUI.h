@@ -47,12 +47,21 @@ namespace PAG {
         float escala[3] = {1.0f, 1.0f, 1.0f};
         bool transformacion = false;
 
+        //control material
+        float colorAmbiente[3] = {0.2f, 0.2f, 0.2f};
+        float colorDifuso[3] = {0.2f, 0.2f, 0.2f};
+        float colorEspecular[3] = {0.2f, 0.2f, 0.2f};
+        float exponente = 32.0f;
+
+        bool materialChanged = false;
+
         void messagesWindow ();
         void backgroundWindow ();
         void shaderWindow();
         void cameraWindow();
         void modelsWindow();
         void transformWindow();
+        void materialWindow();
 
     public:
         virtual ~GUI ();
@@ -93,6 +102,11 @@ namespace PAG {
         float* getRotacion();
         float* getEscala();
 
+        bool hasMaterialChanged();
+        float* getColorAmbiente();
+        float* getColorDifuso();
+        float* getColorEspecular();
+        float getExponente();
 
 
     };

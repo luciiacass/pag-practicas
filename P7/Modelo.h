@@ -15,6 +15,8 @@
 #include "glad/glad.h"
 #include <glm/glm.hpp>
 
+#include "Material.h"
+
 namespace PAG {
     class Modelo {
     private:
@@ -32,6 +34,8 @@ namespace PAG {
         glm::vec3 min;
         glm::vec3 max;
 
+        Material material;
+
     public:
         Modelo();
         ~Modelo();
@@ -47,6 +51,8 @@ namespace PAG {
 
         const glm::vec3& getmin();
         const glm::vec3& getmax();
+
+        Material& getMaterial();
 
 
     };

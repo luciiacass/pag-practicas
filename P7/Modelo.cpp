@@ -6,6 +6,7 @@
 
 #include "Modelo.h"
 
+
 #include <iostream>
 
 namespace PAG {
@@ -195,6 +196,10 @@ namespace PAG {
 
     const glm::vec3& Modelo::getmax() {
         return max;
+    }
+
+    Material& Modelo::getMaterial() {
+        return material;
     }
 
 

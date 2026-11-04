@@ -60,6 +60,7 @@ namespace PAG {
         cameraWindow();
         modelsWindow();
         transformWindow();
+        materialWindow();
     }
 
     void GUI::render () {
@@ -516,6 +517,69 @@ void GUI::modelsWindow() {
      float* GUI::getEscala() {
         return escala;
     }
+
+
+    void GUI::materialWindow() {
+
+        ImGui::SetNextWindowPos(
+            ImVec2(10, 280),
+            ImGuiCond_Once
+        );
+
+        if (ImGui::Begin(
+            "Propiedades del material",
+            nullptr,
+            ImGuiWindowFlags_AlwaysAutoResize
+        )) {
+
+            if (ImGui::ColorEdit3("Ambiente", colorAmbiente)) {
+                materialChanged = true;
+            }
+
+            if (ImGui::ColorEdit3("Difuso", colorDifuso)) {
+                materialChanged = true;
+            }
+
+            if (ImGui::ColorEdit3("Especular", colorEspecular)) {
+                materialChanged = true;
+            }
+
+            if (ImGui::SliderFloat(
+                "Exponente",
+                &exponente,
+                1.0f,
+                256.0f
+            )) {
+                materialChanged = true;
+            }
+        }
+
+        ImGui::End();
+    }
+
+
+    bool GUI::hasMaterialChanged() {
+        bool aux = materialChanged;
+        materialChanged = false;
+        return aux;
+    }
+
+    float* GUI::getColorAmbiente() {
+        return colorAmbiente;
+    }
+
+    float* GUI::getColorDifuso() {
+        return colorDifuso;
+    }
+
+    float* GUI::getColorEspecular() {
+        return colorEspecular;
+    }
+
+    float GUI::getExponente() {
+        return exponente;
+    }
+
 
 
 

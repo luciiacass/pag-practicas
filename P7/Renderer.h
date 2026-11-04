@@ -73,6 +73,12 @@ namespace PAG {
         void transformarModelo(int indice, float* traslacion, float* rotacion, float* escala);
 
         Material& getMaterial();
+        void cambiarMaterialModelos(
+            float* ambiente,
+            float* difuso,
+            float* especular,
+            float exponente
+        );
 
 
     };
