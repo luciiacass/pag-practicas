@@ -380,6 +380,10 @@ namespace PAG {
         modelo->setMatriz(M);
     }
 
+    Material& Renderer::getMaterial() {
+        return material;
+    }
+
 
 
 } // PAG

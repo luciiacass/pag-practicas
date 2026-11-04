@@ -8,10 +8,10 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Modelo.h"
+#include "Material.h"
 
 
 #include <string>
-#include <GLFW/glfw3.h>
 #include <vector>
 #include <memory>
 
@@ -29,8 +29,8 @@ namespace PAG {
 
         Shader shader;
         Camera camera;
-        //Modelo modelo;
         std::vector<Modelo*> modelos;
+        Material material;
 
     public:
         virtual ~Renderer ();
@@ -71,6 +71,8 @@ namespace PAG {
 
         bool solapamiento(Modelo* modelo);
         void transformarModelo(int indice, float* traslacion, float* rotacion, float* escala);
+
+        Material& getMaterial();
 
 
     };
