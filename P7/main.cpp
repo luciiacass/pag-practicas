@@ -93,15 +93,25 @@ void render ( GLFWwindow* window ) {
     }
 
     //cargar materiales
+
     if (PAG::GUI::getInstancia().hasMaterialChanged()) {
 
-        PAG::Renderer::getInstancia().cambiarMaterialModelos(
-            PAG::GUI::getInstancia().getColorAmbiente(),
-            PAG::GUI::getInstancia().getColorDifuso(),
-            PAG::GUI::getInstancia().getColorEspecular(),
-            PAG::GUI::getInstancia().getExponente()
-        );
+        int indice =
+            PAG::GUI::getInstancia().getSelectedModel();
+
+        if (indice >= 0 &&
+            indice < PAG::Renderer::getInstancia().getNumModelos()) {
+
+            PAG::Renderer::getInstancia().cambiarMaterialModelos(
+                indice,
+                PAG::GUI::getInstancia().getColorAmbiente(),
+                PAG::GUI::getInstancia().getColorDifuso(),
+                PAG::GUI::getInstancia().getColorEspecular(),
+                PAG::GUI::getInstancia().getExponente()
+            );
+            }
     }
+
 
 
 

@@ -394,10 +394,24 @@ void GUI::modelsWindow() {
                 " - " +
                 Renderer::getInstancia().getNombreModelo(i);
 
+
             if (ImGui::Selectable(
                 nombre.c_str(), modeloSeleccionado == i)) {
 
                 modeloSeleccionado = i;
+
+                Material& mat = Renderer::getInstancia().getMaterial(i);
+
+                for (int j = 0; j < 3; j++) {
+
+                    colorAmbiente[j] = mat.getAmbiente()[j];
+                    colorDifuso[j] = mat.getDifuso()[j];
+                    colorEspecular[j] = mat.getEspecular()[j];
+                }
+
+                exponente = mat.getExponent();
+
+                materialChanged = false;
                 }
         }
 
@@ -532,25 +546,31 @@ void GUI::modelsWindow() {
             ImGuiWindowFlags_AlwaysAutoResize
         )) {
 
-            if (ImGui::ColorEdit3("Ambiente", colorAmbiente)) {
-                materialChanged = true;
-            }
+            if (modeloSeleccionado == -1) {
 
-            if (ImGui::ColorEdit3("Difuso", colorDifuso)) {
-                materialChanged = true;
-            }
+                ImGui::Text("Selecciona un modelo");
 
-            if (ImGui::ColorEdit3("Especular", colorEspecular)) {
-                materialChanged = true;
-            }
+            } else {
+                if (ImGui::ColorEdit3("Ambiente", colorAmbiente)) {
+                    materialChanged = true;
+                }
 
-            if (ImGui::SliderFloat(
-                "Exponente",
-                &exponente,
-                1.0f,
-                256.0f
-            )) {
-                materialChanged = true;
+                if (ImGui::ColorEdit3("Difuso", colorDifuso)) {
+                    materialChanged = true;
+                }
+
+                if (ImGui::ColorEdit3("Especular", colorEspecular)) {
+                    materialChanged = true;
+                }
+
+                if (ImGui::SliderFloat(
+                    "Exponente",
+                    &exponente,
+                    1.0f,
+                    256.0f
+                )) {
+                    materialChanged = true;
+                }
             }
         }
 

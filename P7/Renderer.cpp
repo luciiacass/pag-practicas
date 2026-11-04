@@ -393,26 +393,30 @@ namespace PAG {
         modelo->setMatriz(M);
     }
 
-    Material& Renderer::getMaterial() {
-        return material;
+    Material& Renderer::getMaterial(int indice) {
+        if (indice < 0 || indice >= modelos.size()) {
+            throw std::runtime_error(
+                "Indice de modelo no valido"
+            );
+        }
+
+        return modelos[indice]->getMaterial();
     }
 
 
     void Renderer::cambiarMaterialModelos(
+        int indice,
         float* ambiente,
         float* difuso,
         float* especular,
         float exponente
     ) {
-        for (Modelo* modelo : modelos) {
-
-            Material& mat = modelo->getMaterial();
+            Material& mat = getMaterial(indice);
 
             mat.setAmbiente(ambiente);
             mat.setDifuso(difuso);
             mat.setEspecular(especular);
             mat.setExponente(exponente);
-        }
     }
 
 

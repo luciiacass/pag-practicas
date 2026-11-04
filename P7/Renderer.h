@@ -30,7 +30,6 @@ namespace PAG {
         Shader shader;
         Camera camera;
         std::vector<Modelo*> modelos;
-        Material material;
 
     public:
         virtual ~Renderer ();
@@ -72,8 +71,9 @@ namespace PAG {
         bool solapamiento(Modelo* modelo);
         void transformarModelo(int indice, float* traslacion, float* rotacion, float* escala);
 
-        Material& getMaterial();
+        Material& getMaterial(int indice);
         void cambiarMaterialModelos(
+            int indice,
             float* ambiente,
             float* difuso,
             float* especular,
