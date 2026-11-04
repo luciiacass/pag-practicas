@@ -33,7 +33,7 @@ namespace PAG {
         float latitude = 5.0;
         float longitude = 5.0;
 
-        ImGui::FileBrowser file;
+        ImGui::FileBrowser file; //no se usa finalmente
 
         // Control de modelos
         std::string rutaModelo;

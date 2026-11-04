@@ -103,26 +103,9 @@ namespace PAG {
                 vertices.push_back(posicion.z);
 
                 // color blanco
-                //vertices.push_back(1.0f);
-                //vertices.push_back(1.0f);
-                //vertices.push_back(1.0f);
-
-                //algo de sombras
-                aiVector3D normal = malla->mNormals[j];
-
-                glm::vec3 luz = glm::normalize(glm::vec3(0.5f, 1.0f, 0.8f));
-
-                glm::vec3 N = glm::normalize(
-                    glm::vec3(normal.x, normal.y, normal.z)
-                );
-
-                float intensidad = std::max(glm::dot(N, luz), 0.0f);
-
-                float color = 0.3f + 0.7f * intensidad;
-
-                vertices.push_back(color);
-                vertices.push_back(color);
-                vertices.push_back(color);
+                vertices.push_back(1.0f);
+                vertices.push_back(1.0f);
+                vertices.push_back(1.0f);
 
 
                 // posicion caja limitadora
@@ -135,18 +118,6 @@ namespace PAG {
                 max.z = std::max(max.z, posicion.z);
 
             }
-
-            std::cout << "Bounding Box del modelo: " << path << std::endl;
-
-            std::cout << "Min: "
-                      << min.x << ", "
-                      << min.y << ", "
-                      << min.z << std::endl;
-
-            std::cout << "Max: "
-                      << max.x << ", "
-                      << max.y << ", "
-                      << max.z << std::endl;
 
             //caras de la malla en triangulos
             for (int j = 0; j < malla->mNumFaces; j++) {
@@ -162,11 +133,11 @@ namespace PAG {
         }
 
         //buffers de OpenGL
-        //VAO
+        //VAO - config de los atributos
         glGenVertexArrays(1, &idVAO);
         glBindVertexArray(idVAO);
 
-        //VBO
+        //VBO - datos de los vertices
         glGenBuffers(1, &idVBO);
         glBindBuffer(GL_ARRAY_BUFFER, idVBO);
 
@@ -190,7 +161,7 @@ namespace PAG {
         );
         glEnableVertexAttribArray(1);
 
-        //IBO
+        //IBO - indices de los triangulos
         glGenBuffers(1, &idIBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIBO);
 
