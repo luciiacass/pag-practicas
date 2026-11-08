@@ -38,10 +38,35 @@ namespace PAG {
 
     void Renderer::refresh (){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
 
+        if (shader.getId() == 0) {
+            return;
+        }
         //shader
         glUseProgram ( shader.getId() );
+
+        //visualizacion (solido o alambrado)
+        if (modo_visualizacion == Visualizacion::solido) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+
+        //subrutina
+        const char* subrutina = "alambre";
+        if (modo_visualizacion == Visualizacion::solido) {
+            subrutina = "material";
+        }else {
+            subrutina = "alambre";
+        }
+
+        GLuint indice = glGetSubroutineIndex(shader.getId(),GL_FRAGMENT_SHADER,subrutina);
+        if (indice == GL_INVALID_INDEX) {
+            throw std::runtime_error(
+                std::string("No se encuentra la subrutina: ") + subrutina
+            );
+        }
+        glUniformSubroutinesuiv(GL_FRAGMENT_SHADER,1,&indice);
 
         //matrices de la camara
         glm::mat4 V = camera.getViewMatrix();
@@ -404,19 +429,17 @@ namespace PAG {
     }
 
 
-    void Renderer::cambiarMaterialModelos(
-        int indice,
-        float* ambiente,
-        float* difuso,
-        float* especular,
-        float exponente
-    ) {
+    void Renderer::cambiarMaterialModelos(int indice,float* ambiente,float* difuso,float* especular,float exponente) {
             Material& mat = getMaterial(indice);
 
             mat.setAmbiente(ambiente);
             mat.setDifuso(difuso);
             mat.setEspecular(especular);
             mat.setExponente(exponente);
+    }
+
+    void Renderer::setVisualizacion(Visualizacion visualizacion) {
+        modo_visualizacion = visualizacion;
     }
 
 

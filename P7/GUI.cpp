@@ -75,6 +75,7 @@ namespace PAG {
         modelsWindow();
         transformWindow();
         materialWindow();
+        visualizacionWindow();
     }
 
     void GUI::render () {
@@ -618,6 +619,44 @@ void GUI::modelsWindow() {
     float GUI::getExponente() {
         return exponente;
     }
+
+
+    void GUI::visualizacionWindow() {
+
+        posicionarVentana();
+
+        if (ImGui::Begin("Modo de visualizacion")) {
+
+            const char* modos[] = {
+                "Solido",
+                "Alambre"
+            };
+
+            if (ImGui::Combo(
+                "Modo",
+                &modo_visualizacion,
+                modos,
+                IM_ARRAYSIZE(modos)
+            )) {
+                visualizacion_changed = true;
+            }
+        }
+
+        siguienteY += ImGui::GetWindowHeight() + separacionVentanas;
+
+        ImGui::End();
+    }
+
+    bool GUI::hasModoVisualizacionChanged() {
+        bool aux = visualizacion_changed;
+        visualizacion_changed = false;
+        return aux;
+    }
+
+    int GUI::getModoVisualizacion() {
+        return modo_visualizacion;
+    }
+
 
 
 

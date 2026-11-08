@@ -58,6 +58,10 @@ namespace PAG {
 
         bool materialChanged = false;
 
+        //visualizacion (solido o alambre)
+        int modo_visualizacion = 0; //solido (1: alambre)
+        bool visualizacion_changed = false;
+
         void messagesWindow ();
         void backgroundWindow ();
         void shaderWindow();
@@ -65,6 +69,7 @@ namespace PAG {
         void modelsWindow();
         void transformWindow();
         void materialWindow();
+        void visualizacionWindow();
 
     public:
         virtual ~GUI ();
@@ -112,6 +117,9 @@ namespace PAG {
         float* getColorDifuso();
         float* getColorEspecular();
         float getExponente();
+
+        bool hasModoVisualizacionChanged();
+        int getModoVisualizacion();
 
 
     };

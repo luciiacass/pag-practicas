@@ -16,6 +16,12 @@
 #include <memory>
 
 namespace PAG {
+
+    enum class Visualizacion {
+        solido,
+        alambre
+    };
+
     class Renderer {
     private:
         static Renderer* instancia;
@@ -30,6 +36,8 @@ namespace PAG {
         Shader shader;
         Camera camera;
         std::vector<Modelo*> modelos;
+
+        Visualizacion modo_visualizacion = Visualizacion::solido;
 
     public:
         virtual ~Renderer ();
@@ -72,13 +80,9 @@ namespace PAG {
         void transformarModelo(int indice, float* traslacion, float* rotacion, float* escala);
 
         Material& getMaterial(int indice);
-        void cambiarMaterialModelos(
-            int indice,
-            float* ambiente,
-            float* difuso,
-            float* especular,
-            float exponente
-        );
+        void cambiarMaterialModelos(int indice,float* ambiente,float* difuso,float* especular,float exponent);
+
+        void setVisualizacion(Visualizacion visualizacion);
 
 
     };

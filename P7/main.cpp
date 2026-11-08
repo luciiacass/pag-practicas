@@ -113,8 +113,20 @@ void render ( GLFWwindow* window ) {
     }
 
 
+    if (PAG::GUI::getInstancia().hasModoVisualizacionChanged()) {
 
+        int modo = PAG::GUI::getInstancia().getModoVisualizacion();
 
+        if (modo == 0) {
+            PAG::Renderer::getInstancia().setVisualizacion(
+                PAG::Visualizacion::solido
+            );
+        } else {
+            PAG::Renderer::getInstancia().setVisualizacion(
+                PAG::Visualizacion::alambre
+            );
+        }
+    }
 
     PAG::Renderer::getInstancia().refresh();  // Dibuja la escena (OpenGL)
     PAG::GUI::getInstancia().render();        // La interfaz va encima
