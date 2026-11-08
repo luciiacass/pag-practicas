@@ -337,3 +337,142 @@ classDiagram
     Renderer "1" *-- "0..*" Modelo 
     GUI ..> Renderer 
 ```
+
+
+# pag-p7
+1. Clase Material. Almacena el color ambiente, diguso y especular con sus componentes RGB, además del exponente del brillo especular.
+2. Atributo material en la clase modelo. Esto permite que cada modelo tenga su propio material
+   Render accede a cada material y es el encargado de mostrarlo
+3. En la interfaz se ha añadido una ventana para contolar los colores ambiente, difuso y especular de cada modelo. 
+   Cada modelo tiene los suyos por lo que cuando se selecciona otro modelo, se muestra sus valores.
+4. Seleccion de modo de visualizacion (solido o alambre) de cada objeto.
+   Se ha creado otra pantalla en la interfaz para seleccionarlo. 
+   Si es solido, se selecciona en el shader el materialDifuso y si es alambre, se selecciona el color rojo. Esto se realiza con subrutinas
+
+
+**INSTRUCCIONES**
+1. Introducir shader/pag03 en la ventana 'Shader Program' y pulsar Load.
+2. Seleccionar un modelo en la venta de modelos y cargarlo.
+3. Abrir la ventana propiedades del material y modificar los colores ambiente, difuso, especular y exponenete.
+4. Seleccionar el modo de visualizacion (solido o alambre)
+5. Mover la camara
+6. Transformar el modelo
+7. Cambiar el fondo tanto con la pantalla correspondiente o con la rueda del raton.
+
+
+
+```mermaid
+classDiagram
+    direction LR
+
+    class Renderer {
+        -static Renderer* instancia
+        -Shader shader
+        -Camera camera
+        -vector~Modelo*~ modelos
+        -Visualizacion modo_visualizacion
+        +static getInstancia() Renderer&
+        +refresh() void
+        +reframe(int width, int height) void
+        +loadShaderProgram(string name) void
+        +loadOBJ(string path) void
+        +eliminaModelo(int indice) void
+        +getNumModelos() int
+        +getNombreModelo(int indice) string
+        +transformarModelo(int indice, float* traslacion, float* rotacion, float* escala) void
+        +getMaterial(int indice) Material&
+        +cambiarMaterialModelos(int indice, float* ambiente, float* difuso, float* especular, float exponente) void
+        +setVisualizacion(Visualizacion visualizacion) void
+    }
+
+    class Modelo {
+        -GLuint idVAO
+        -GLuint idVBO
+        -GLuint idIBO
+        -int indexCount
+        -mat4 matModelo
+        -string nombre
+        -vec3 min
+        -vec3 max
+        -Material material
+        +create() void
+        +draw() void
+        +loadobj(string path) void
+        +setMatriz(mat4 mat) void
+        +getMatriz() mat4
+        +getNombre() string
+        +getMaterial() Material&
+    }
+
+    class Material {
+        -float[3] ambiente
+        -float[3] difuso
+        -float[3] especular
+        -float exp
+        +getAmbiente() float*
+        +getDifuso() float*
+        +getEspecular() float*
+        +getExponent() float
+        +setAmbiente(float* a) void
+        +setDifuso(float* d) void
+        +setEspecular(float* e) void
+        +setExponente(float e) void
+    }
+
+    class Camera {
+        -vec3 pos
+        -vec3 la
+        -vec3 u
+        -vec3 v
+        -vec3 n
+        +getViewMatrix() mat4
+        +getProjectionMatrix() mat4
+        +setViewport(int width, int height) void
+        +pan(float angle) void
+        +tilt(float angle) void
+        +dolly(float dx, float dz) void
+        +crane(float dy) void
+        +orbit(float latitude, float longitude) void
+        +zoom(float angle) void
+    }
+
+    class Shader {
+        -GLuint idVS
+        -GLuint idFS
+        -GLuint idSP
+        +create(string name) void
+        +getId() GLuint
+    }
+
+    class GUI {
+        -static GUI* instancia
+        -int modeloSeleccionado
+        -float[3] colorAmbiente
+        -float[3] colorDifuso
+        -float[3] colorEspecular
+        -float exponente
+        -bool materialChanged
+        -int modoVisualizacion
+        +static getInstancia() GUI&
+        +draw() void
+        +modelsWindow() void
+        +materialWindow() void
+        +getSelectedModel() int
+        +hasMaterialChanged() bool
+        +getColorDifuso() float*
+        +getModoVisualizacion() int
+    }
+
+    class Visualizacion {
+        <<enumeration>>
+        solido
+        alambre
+    }
+
+    Renderer "1" *-- "1" Shader : contiene
+    Renderer "1" *-- "1" Camera : contiene
+    Renderer "1" *-- "0..*" Modelo : gestiona
+    Modelo "1" *-- "1" Material : contiene
+    Renderer --> Visualizacion : utiliza
+    GUI ..> Renderer : solicita cambios
+```
