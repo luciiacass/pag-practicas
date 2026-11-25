@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 #include <imgui.h>
 #include "imfilebrowser.h"
+#include "Luz.h"
 
 
 namespace PAG {
@@ -62,6 +63,15 @@ namespace PAG {
         int modo_visualizacion = 0; //solido (1: alambre)
         bool visualizacion_changed = false;
 
+        //luces
+        int luzSeleccionada = -1;
+
+        bool anadirLuz = false;
+        bool eliminarLuz = false;
+        bool luzChanged = false;
+
+        Luz luzEditada;
+
         void messagesWindow ();
         void backgroundWindow ();
         void shaderWindow();
@@ -70,6 +80,7 @@ namespace PAG {
         void transformWindow();
         void materialWindow();
         void visualizacionWindow();
+        void lucesWindow();
 
     public:
         virtual ~GUI ();
@@ -120,6 +131,12 @@ namespace PAG {
 
         bool hasModoVisualizacionChanged();
         int getModoVisualizacion();
+
+        bool hasAddLuzPressed();
+        bool hasDeleteLuzPressed();
+        bool hasLuzChanged();
+        int getSelectedLuz();
+        Luz& getLuzEditada() ;
 
 
     };

@@ -92,6 +92,11 @@ namespace PAG {
         void setVisualizacion(Visualizacion visualizacion);
 
         void inicializarLuces();
+        int getNumLuces();
+        void addLuz();
+        void eliminaLuz(int indice);
+        Luz& getLuz(int indice);
+        void cambiarLuz(int indice, const Luz& luz);
 
 
     };

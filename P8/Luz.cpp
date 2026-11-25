@@ -62,4 +62,12 @@ namespace PAG {
     void Luz::setS(float exponente) {
         s = exponente;
     }
+
+    bool Luz::getActiva() {
+        return active;
+    }
+
+    void Luz::setActiva(bool estado) {
+        active = estado;
+    }
 } // PAG

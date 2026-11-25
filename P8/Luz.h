@@ -32,6 +32,8 @@ namespace PAG {
         float gamma = 30.0f;
         float s = 1.0f;
 
+        bool active = true;
+
     public:
         Luz();
 
@@ -57,6 +59,9 @@ namespace PAG {
 
         void setGamma(float angulo);
         void setS(float exponente);
+
+        bool getActiva();
+        void setActiva(bool estado);
     };
 } // PAG
 

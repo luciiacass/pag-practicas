@@ -64,15 +64,32 @@ namespace PAG {
             }
 
             //rendering multipasada para todas las luces
+
+            // Rendering multipasada
+            bool primeraLuz = true;
+
             for (int i = 0; i < luces.size(); i++) {
 
-                if (i == 0) {
-                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                if (!luces[i].getActiva()) {
+                    continue;
+                }
+
+                if (primeraLuz) {
+                    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+                    primeraLuz = false;
+
                 } else {
                     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
                 }
 
                 aplicarLuz(luces[i], V);
+                dibujarModelos(V, P);
+            }
+
+            // Si todas las luces estan desactivadas
+            if (primeraLuz) {
+                glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+                selecSubrutina("material");
                 dibujarModelos(V, P);
             }
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -583,6 +600,49 @@ namespace PAG {
 
             modelo->draw();
         }
+    }
+
+    int Renderer::getNumLuces() {
+        return int(luces.size());
+    }
+
+    void Renderer::addLuz() {
+        Luz nuevaLuz;
+        nuevaLuz.setTipo(tipoLuz::ambiente);
+        luces.push_back(nuevaLuz);
+    }
+
+    void Renderer::eliminaLuz(int indice) {
+
+        if (indice < 0 || indice >= getNumLuces()) {
+            throw std::runtime_error(
+                "Indice de luz no valido"
+            );
+        }
+
+        luces.erase(luces.begin() + indice);
+    }
+
+    Luz& Renderer::getLuz(int indice) {
+
+        if (indice < 0 || indice >= getNumLuces()) {
+            throw std::runtime_error(
+                "Indice de luz no valido"
+            );
+        }
+
+        return luces[indice];
+    }
+
+    void Renderer::cambiarLuz(int indice, const Luz& luz) {
+
+        if (indice < 0 || indice >= getNumLuces()) {
+            throw std::runtime_error(
+                "Indice de luz no valido"
+            );
+        }
+
+        luces[indice] = luz;
     }
 
 

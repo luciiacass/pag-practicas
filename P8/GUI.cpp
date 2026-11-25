@@ -76,6 +76,7 @@ namespace PAG {
         transformWindow();
         materialWindow();
         visualizacionWindow();
+        lucesWindow();
     }
 
     void GUI::render () {
@@ -656,6 +657,237 @@ void GUI::modelsWindow() {
     int GUI::getModoVisualizacion() {
         return modo_visualizacion;
     }
+
+
+
+void GUI::lucesWindow() {
+
+    posicionarVentana();
+
+    if (ImGui::Begin("Gestion de luces")) {
+
+        Renderer& renderer = Renderer::getInstancia();
+
+        const char* tipos[] = {
+            "Ambiente",
+            "Puntual",
+            "Direccional",
+            "Foco"
+        };
+
+        // Añadir luz
+        if (ImGui::Button("Anadir luz")) {
+            anadirLuz = true;
+        }
+
+        ImGui::Separator();
+
+        int numLuces = renderer.getNumLuces();
+
+        ImGui::Text("Luces cargadas: %d", numLuces);
+
+        if (luzSeleccionada >= numLuces) {
+            luzSeleccionada = numLuces - 1;
+        }
+
+        // Listado de luces
+        for (int i = 0; i < numLuces; i++) {
+
+            Luz& luz = renderer.getLuz(i);
+
+            std::string nombre =
+                "Luz " + std::to_string(i + 1) +
+                " - " +
+                tipos[static_cast<int>(luz.getTipo())];
+
+            if (!luz.getActiva()) {
+                nombre += " (Desactivada)";
+            }
+
+            if (ImGui::Selectable(
+                nombre.c_str(), luzSeleccionada == i)) {
+
+                luzSeleccionada = i;
+            }
+        }
+
+        ImGui::Separator();
+
+        // Propiedades de la luz seleccionada
+        if (luzSeleccionada >= 0) {
+
+            luzEditada = renderer.getLuz(luzSeleccionada);
+
+            if (ImGui::Button("Eliminar luz")) {
+
+                eliminarLuz = true;
+
+            } else {
+
+                // Activar o desactivar
+                bool activa = luzEditada.getActiva();
+
+                if (ImGui::Checkbox("Luz activa", &activa)) {
+
+                    luzEditada.setActiva(activa);
+                    luzChanged = true;
+                }
+
+                // Seleccion del tipo de luz
+                int tipo = static_cast<int>(
+                    luzEditada.getTipo()
+                );
+
+                if (ImGui::Combo(
+                    "Tipo de luz",
+                    &tipo,
+                    tipos,
+                    IM_ARRAYSIZE(tipos)
+                )) {
+
+                    luzEditada.setTipo(
+                        static_cast<tipoLuz>(tipo)
+                    );
+
+                    luzChanged = true;
+                }
+
+                ImGui::Separator();
+
+                //ambiente
+                if (tipo == 0) {
+
+                    glm::vec3 Ia = luzEditada.getIa();
+
+                    if (ImGui::ColorEdit3("Ambiente", &Ia[0])) {
+
+                        luzEditada.setIa(Ia);
+                        luzChanged = true;
+                    }
+                }
+
+                //difuso, especular
+                if (tipo != 0) {
+
+                    glm::vec3 Id = luzEditada.getId();
+                    glm::vec3 Is = luzEditada.getIs();
+
+                    if (ImGui::ColorEdit3("Difuso", &Id[0])) {
+
+                        luzEditada.setId(Id);
+                        luzChanged = true;
+                    }
+
+                    if (ImGui::ColorEdit3("Especular", &Is[0])) {
+
+                        luzEditada.setIs(Is);
+                        luzChanged = true;
+                    }
+                }
+
+                // posicion
+                if (tipo == 1 || tipo == 3) {
+
+                    glm::vec3 pos = luzEditada.getPosicion();
+
+                    if (ImGui::DragFloat3(
+                        "Posicion", &pos[0], 0.1f
+                    )) {
+
+                        luzEditada.setPosicion(pos);
+                        luzChanged = true;
+                    }
+                }
+
+                // direccion
+                if (tipo == 2 || tipo == 3) {
+
+                    glm::vec3 dir = luzEditada.getDireccion();
+
+                    if (ImGui::DragFloat3(
+                        "Direccion", &dir[0], 0.1f
+                    )) {
+
+                        // Evitamos una direccion nula
+                        if (glm::length(dir) > 0.0001f) {
+
+                            luzEditada.setDireccion(dir);
+                            luzChanged = true;
+                        }
+                    }
+                }
+
+                //foco
+                if (tipo == 3) {
+
+                    float gamma = luzEditada.getGamma();
+                    float s = luzEditada.getS();
+
+                    if (ImGui::SliderFloat(
+                        "Apertura", &gamma, 1.0f, 90.0f
+                    )) {
+
+                        luzEditada.setGamma(gamma);
+                        luzChanged = true;
+                    }
+
+                    if (ImGui::SliderFloat(
+                        "Exponente foco", &s, 1.0f, 128.0f
+                    )) {
+
+                        luzEditada.setS(s);
+                        luzChanged = true;
+                    }
+                }
+            }
+
+        } else {
+
+            ImGui::Text("Selecciona una luz");
+        }
+    }
+
+    siguienteY += ImGui::GetWindowHeight()
+                + separacionVentanas;
+
+    ImGui::End();
+}
+
+
+    bool GUI::hasAddLuzPressed() {
+
+        bool aux = anadirLuz;
+        anadirLuz = false;
+
+        return aux;
+    }
+
+    bool GUI::hasDeleteLuzPressed() {
+
+        bool aux = eliminarLuz;
+        eliminarLuz = false;
+
+        return aux;
+    }
+
+    bool GUI::hasLuzChanged() {
+
+        bool aux = luzChanged;
+        luzChanged = false;
+
+        return aux;
+    }
+
+    int GUI::getSelectedLuz() {
+
+        return luzSeleccionada;
+    }
+
+    Luz& GUI::getLuzEditada()  {
+
+        return luzEditada;
+    }
+
 
 
 

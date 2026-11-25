@@ -128,6 +128,48 @@ void render ( GLFWwindow* window ) {
         }
     }
 
+    //gestion de luces
+    if (PAG::GUI::getInstancia().hasAddLuzPressed()) {
+
+        try {
+            PAG::Renderer::getInstancia().addLuz();
+            PAG::GUI::getInstancia().addMessage("Nueva luz anadida");
+        } catch (const std::exception& e) {
+            PAG::GUI::getInstancia().addMessage(e.what());
+        }
+    }
+
+    if (PAG::GUI::getInstancia().hasDeleteLuzPressed()) {
+
+        try {
+            int indice = PAG::GUI::getInstancia().getSelectedLuz();
+
+            PAG::Renderer::getInstancia().eliminaLuz(indice);
+            PAG::GUI::getInstancia().addMessage(
+                "Luz eliminada: " + std::to_string(indice + 1)
+            );
+
+        } catch (const std::exception& e) {
+            PAG::GUI::getInstancia().addMessage(e.what());
+        }
+
+        PAG::GUI::getInstancia().hasLuzChanged();
+
+    } else if (PAG::GUI::getInstancia().hasLuzChanged()) {
+
+        try {
+            int indice = PAG::GUI::getInstancia().getSelectedLuz();
+
+            PAG::Renderer::getInstancia().cambiarLuz(
+                indice,
+                PAG::GUI::getInstancia().getLuzEditada()
+            );
+
+        } catch (const std::exception& e) {
+            PAG::GUI::getInstancia().addMessage(e.what());
+        }
+    }
+
     PAG::Renderer::getInstancia().refresh();  // Dibuja la escena (OpenGL)
     PAG::GUI::getInstancia().render();        // La interfaz va encima
 
