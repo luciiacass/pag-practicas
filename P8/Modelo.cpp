@@ -92,7 +92,7 @@ namespace PAG {
         for (int i = 0; i < scene->mNumMeshes; i++) {
             aiMesh* malla = scene->mMeshes[i]; //malla que estamos recorriendo
             //numero vertices almacenados para saber en que pos empezamos
-            int offset = vertices.size() / 6; //3 de pos y 3 de color
+            int offset = vertices.size() / 6; //3 de pos y 3 de normal
             //vertices
             for ( int j = 0; j < malla->mNumVertices; j++) { //todos los vertices de esa malla
 
@@ -104,9 +104,16 @@ namespace PAG {
                 vertices.push_back(posicion.z);
 
                 // color blanco
-                vertices.push_back(1.0f);
-                vertices.push_back(1.0f);
-                vertices.push_back(1.0f);
+                //vertices.push_back(1.0f);
+                //vertices.push_back(1.0f);
+                //vertices.push_back(1.0f);
+
+                //sustituimos los colores de los vértices por sus normales
+                aiVector3D normal = malla->mNormals[j];
+
+                vertices.push_back(normal.x);
+                vertices.push_back(normal.y);
+                vertices.push_back(normal.z);
 
 
                 // posicion caja limitadora
