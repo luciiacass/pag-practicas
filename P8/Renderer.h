@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Modelo.h"
 #include "Material.h"
+#include "Luz.h"
 
 
 #include <string>
@@ -36,8 +37,14 @@ namespace PAG {
         Shader shader;
         Camera camera;
         std::vector<Modelo*> modelos;
+        std::vector<Luz> luces;
 
         Visualizacion modo_visualizacion = Visualizacion::solido;
+
+        //metodos luces
+        void selecSubrutina(const char* nombre);
+        void aplicarLuz(Luz& luz, glm::mat4& V);
+        void dibujarModelos( glm::mat4& V, glm::mat4& P);
 
     public:
         virtual ~Renderer ();
@@ -83,6 +90,8 @@ namespace PAG {
         void cambiarMaterialModelos(int indice,float* ambiente,float* difuso,float* especular,float exponent);
 
         void setVisualizacion(Visualizacion visualizacion);
+
+        void inicializarLuces();
 
 
     };

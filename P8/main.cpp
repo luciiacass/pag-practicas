@@ -282,6 +282,7 @@ int main()
     // - Le decimos a OpenGL que tenga en cuenta la profundidad a la hora de
     // dibujar.
     PAG::Renderer::getInstancia().depth();
+    PAG::Renderer::getInstancia().inicializarLuces();
 
     // - Ciclo de eventos de la aplicación. La condición de parada es que la
     // ventana principal deba cerrarse, por ejemplo, si el usuario pulsa el

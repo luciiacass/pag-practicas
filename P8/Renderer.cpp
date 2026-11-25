@@ -14,6 +14,7 @@
 #include "GUI.h"
 
 
+
 namespace PAG {
 
     Renderer::Renderer (){ }
@@ -45,59 +46,46 @@ namespace PAG {
         //shader
         glUseProgram ( shader.getId() );
 
+        glm::mat4 V = camera.getViewMatrix();
+        glm::mat4 P = camera.getProjectionMatrix();
+
+
         //visualizacion (solido o alambrado)
         if (modo_visualizacion == Visualizacion::solido) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }else {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        }
+            //si no hay luces
+            if (luces.empty()) {
 
-        //subrutina
-        const char* subrutina = "alambre";
-        if (modo_visualizacion == Visualizacion::solido) {
-            subrutina = "material";
-        }else {
-            subrutina = "alambre";
-        }
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                selecSubrutina("material");
+                dibujarModelos(V, P);
 
-        GLuint indice = glGetSubroutineIndex(shader.getId(),GL_FRAGMENT_SHADER,subrutina);
-        if (indice == GL_INVALID_INDEX) {
-            throw std::runtime_error(
-                std::string("No se encuentra la subrutina: ") + subrutina
-            );
-        }
-        glUniformSubroutinesuiv(GL_FRAGMENT_SHADER,1,&indice);
-
-        //matrices de la camara
-        glm::mat4 V = camera.getViewMatrix();
-        glm::mat4 P = camera.getProjectionMatrix();
-        glm::mat4 MVP = P * V;
-
-        //envia la matriz al shader
-        GLint location = glGetUniformLocation ( shader.getId(), "MVP" );
-        glUniformMatrix4fv ( location, 1, GL_FALSE, &MVP[0][0] );
-
-        GLint locationDifuso = glGetUniformLocation(
-            shader.getId(), "materialDifuso"
-        );
-
-        //modelo.draw();
-        for (Modelo* modelo : modelos) {
-            glm::mat4 M = modelo->getMatriz();
-            glm::mat4 MVP = P * V * M;
-            glUniformMatrix4fv ( location, 1, GL_FALSE, &MVP[0][0] );
-
-            //material
-            if (locationDifuso != -1) {
-                glUniform3fv(
-                    locationDifuso,
-                    1,
-                    modelo->getMaterial().getDifuso()
-                );
+                return;
             }
 
-            modelo->draw();
+            //rendering multipasada para todas las luces
+            for (int i = 0; i < luces.size(); i++) {
+
+                if (i == 0) {
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                } else {
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+                }
+
+                aplicarLuz(luces[i], V);
+                dibujarModelos(V, P);
+            }
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            selecSubrutina("alambre");
+            dibujarModelos(V, P);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+            return;
         }
+
     }
 
     //Actualiza tanto el viewport de OpenGL como las dimensiones de la camara
@@ -135,7 +123,9 @@ namespace PAG {
     }
 
     void Renderer::depth() {
-        glEnable ( GL_DEPTH_TEST );
+        glEnable(GL_BLEND); // Activación del modo mezcla
+        glEnable(GL_DEPTH_TEST); // Activación del Z-Buffer
+        glDepthFunc(GL_LEQUAL); // Uso de la función “menor o igual”
     }
 
 
@@ -440,6 +430,159 @@ namespace PAG {
 
     void Renderer::setVisualizacion(Visualizacion visualizacion) {
         modo_visualizacion = visualizacion;
+    }
+
+    void Renderer::inicializarLuces() {
+        luces.clear();
+
+        //ambiente (iluminacion general)
+        Luz ambiente;
+        ambiente.setTipo(tipoLuz::ambiente);
+        ambiente.setIa(glm::vec3(0.3f, 0.3f, 0.3f));
+        luces.push_back(ambiente);
+
+        //puntual (iluminacion a la izq)
+        Luz puntual;
+        puntual.setTipo(tipoLuz::puntual);
+
+        puntual.setPosicion(glm::vec3(-3.0f, 2.0f, 2.0f));
+        puntual.setId(glm::vec3(1.0f, 0.0f, 0.0f));
+        puntual.setIs(glm::vec3(1.0f, 1.0f, 1.0f));
+        luces.push_back(puntual);
+
+        //direccional (iluminación arriba a la derecha)
+        Luz direccional;
+        direccional.setTipo(tipoLuz::direccional);
+
+        direccional.setDireccion(glm::vec3(-1.0f, -1.0f, -1.0f));
+        direccional.setId(glm::vec3(0.0f, 0.0f, 1.0f));
+        direccional.setIs(glm::vec3(1.0f, 1.0f, 1.0f));
+        luces.push_back(direccional);
+
+        //foco (dirigida al modelo)
+        Luz foco;
+        foco.setTipo(tipoLuz::foco);
+
+        foco.setPosicion(glm::vec3(0.0f, 3.0f, 2.0f));
+        foco.setDireccion(glm::vec3(0.0f, -3.0f, -4.0f));
+
+        foco.setId(glm::vec3(0.0f, 1.0f, 0.0f));
+        foco.setIs(glm::vec3(1.0f, 1.0f, 1.0f));
+
+        foco.setGamma(30.0f);
+        foco.setS(2.0f);
+
+        luces.push_back(foco);
+
+    }
+
+    void Renderer::selecSubrutina(const char* nombre) {
+        GLuint indice = glGetSubroutineIndex(
+                shader.getId(),
+                GL_FRAGMENT_SHADER,
+                nombre
+            );
+
+        if (indice == GL_INVALID_INDEX) {
+            throw std::runtime_error(
+                std::string("No se encuentra la subrutina: ") + nombre
+            );
+        }
+
+        glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &indice);
+    }
+
+    void Renderer::aplicarLuz(Luz& luz, glm::mat4& V) {
+        GLuint id = shader.getId();
+
+        //subrutina
+        switch (luz.getTipo()) {
+
+            case tipoLuz::ambiente:
+                selecSubrutina("ambiente");
+                break;
+
+            case tipoLuz::puntual:
+                selecSubrutina("puntual");
+                break;
+
+            case tipoLuz::direccional:
+                selecSubrutina("direccional");
+                break;
+
+            case tipoLuz::foco:
+                selecSubrutina("foco");
+                break;
+        }
+
+        //luz
+        glm::vec3 Ia = luz.getIa();
+        glm::vec3 Id = luz.getId();
+        glm::vec3 Is = luz.getIs();
+
+        glUniform3fv(glGetUniformLocation(id, "Ia"), 1, &Ia[0]);
+        glUniform3fv(glGetUniformLocation(id, "Id"), 1, &Id[0]);
+        glUniform3fv(glGetUniformLocation(id, "Is"), 1, &Is[0]);
+
+        //posicion
+        glm::vec3 posicionVision = glm::vec3(V * glm::vec4(luz.getPosicion(), 1.0f));
+        glUniform3fv(glGetUniformLocation(id, "posicionLuz"),1, &posicionVision[0]);
+
+        //direccion
+        glm::vec3 direccionVision = glm::vec3(V * glm::vec4(luz.getDireccion(), 0.0f));
+        glUniform3fv(glGetUniformLocation(id, "direccionLuz"),1, &direccionVision[0]);
+
+        //foco
+        glUniform1f(glGetUniformLocation(id, "gamma"),luz.getGamma());
+        glUniform1f(glGetUniformLocation(id, "s"),luz.getS());
+    }
+
+    void Renderer::dibujarModelos( glm::mat4& V, glm::mat4& P) {
+        GLuint id = shader.getId();
+
+        for (Modelo* modelo : modelos) {
+
+            // matrices
+            glm::mat4 M = modelo->getMatriz();
+            glm::mat4 MV = V * M;
+            glm::mat4 MVP = P * MV;
+
+            // matriz para transformar las normales
+            glm::mat3 matrizNormal = glm::transpose(glm::inverse(glm::mat3(MV)));
+
+            // Envio de matrices al shader
+            glUniformMatrix4fv(glGetUniformLocation(id, "MVP"),1, GL_FALSE, &MVP[0][0]);
+            glUniformMatrix4fv(glGetUniformLocation(id, "MV"),1, GL_FALSE, &MV[0][0]);
+            glUniformMatrix3fv(glGetUniformLocation(id, "mNormal"),1, GL_FALSE, &matrizNormal[0][0]);
+
+            Material& mat = modelo->getMaterial();
+
+            //ambiente
+            glUniform3fv(
+                glGetUniformLocation(id, "materialAmbiente"),
+                1, mat.getAmbiente()
+            );
+
+            //difusa
+            glUniform3fv(
+                glGetUniformLocation(id, "materialDifuso"),
+                1, mat.getDifuso()
+            );
+
+            //especular
+            glUniform3fv(
+                glGetUniformLocation(id, "materialEspecular"),
+                1, mat.getEspecular()
+            );
+
+            // exponente
+            glUniform1f(
+                glGetUniformLocation(id, "exponente"),
+                mat.getExponent()
+            );
+
+            modelo->draw();
+        }
     }
 
 

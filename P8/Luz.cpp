@@ -39,20 +39,20 @@ namespace PAG {
         return s;
     }
 
-    void Luz::setIa(glm::vec3& color) {
+    void Luz::setIa(const glm::vec3& color) {
         Ia = color;
     }
-    void Luz::setId(glm::vec3& color) {
+    void Luz::setId(const glm::vec3& color) {
         Id = color;
     }
-    void Luz::setIs(glm::vec3& color) {
+    void Luz::setIs(const glm::vec3& color) {
         Is = color;
     }
 
-    void Luz::setPosicion(glm::vec3& pos) {
+    void Luz::setPosicion(const glm::vec3& pos) {
         posicion = pos;
     }
-    void Luz::setDireccion(glm::vec3& dir) {
+    void Luz::setDireccion(const glm::vec3& dir) {
         direccion = dir;
     }
 

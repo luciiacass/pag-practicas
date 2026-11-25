@@ -48,12 +48,12 @@ namespace PAG {
         float getGamma();
         float getS();
 
-        void setIa(glm::vec3& color);
-        void setId(glm::vec3& color);
-        void setIs(glm::vec3& color);
+        void setIa(const glm::vec3& color);
+        void setId(const glm::vec3& color);
+        void setIs(const glm::vec3& color);
 
-        void setPosicion(glm::vec3& pos);
-        void setDireccion(glm::vec3& dir);
+        void setPosicion(const glm::vec3& pos);
+        void setDireccion(const glm::vec3& dir);
 
         void setGamma(float angulo);
         void setS(float exponente);
