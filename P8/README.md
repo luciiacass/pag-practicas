@@ -476,3 +476,22 @@ classDiagram
     Renderer --> Visualizacion : utiliza
     GUI ..> Renderer : solicita cambios
 ```
+# pag-p8
+CAMBIOS REALIZADOS:
+1. Clase Luz para almacenar los atributos de los cuatro tipos de iluminación
+2. Almacenamiento de luces. Vector<luz> en la clase Renderer para tener varias luces en la escena al mismo tiempo
+   Se crea una luz de cada tipo al inicio y se pueden ir añadiendo o eliminando
+3. Sustitución del color de los vértices por las normales. Ahora los colores se obtienen de las propiedades del material
+4. Vertex shader -> dos matrices nuevas MV y mNormal
+5. Fragment shader -> nuevas subrutinas para cada iluminación
+6. Cambios en Renderer
+   - división del método refresh() en varios métodos
+   - selecSubrutina() para seleccionar la subrutina y aplicarla
+   - aplicarLuz() selecciona el tipo de iluminación y envía las propiedades de la luz al shader.
+   - dibujarModelos(): recorre los modelos, calcula sus matrices, envía las propiedades de sus materiales y los dibuja.
+7. Rendering multipasada. Se realiza una pasada de renderizado por cada luz activa de la escena
+8. Gestión de luces en la interfaz. Permite añadir, eliminar, seleccionar, activar y desactivar luces
+
+**DIAGRAMA DE CLASES UML**
+
+![Diagrama de clases UML - Practica 8](UML_P8.png)
